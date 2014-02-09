@@ -1,0 +1,51 @@
+\begin{thebibliography}{1}
+
+\bibitem{CDE06}
+Y.~Chen, F.~Dehne, T.~Eavis, D.~Green, A.~Rau-Chaplin, and E.~Sithirasenan.
+\newblock {cgmOLAP}: Efficient parallel generation and querying of terabyte
+  size {ROLAP} data cubes.
+\newblock In {\em Proc. 22nd Int. Conf. on Data Engineering (ICDE)}, pages
+  164--164. IEEE Comp. Soc. Dig. Library, 2006.
+
+\bibitem{DEL07}
+F.~Dehne, T.~Eavis, and B.~Liang.
+\newblock Compressing data cubes in parallel {OLAP} systems.
+\newblock {\em Data Science Journal}, 6:S184--S197, 2007.
+
+\bibitem{DER07}
+F.~Dehne, T.~Eavis, and A.~Rau-Chaplin.
+\newblock The {cgmCUBE} project: Optimizing parallel data cube generation for
+  {ROLAP}.
+\newblock {\em Distributed and Parallel Databases}, 19(1):29--62, 2006.
+
+\bibitem{DFL06}
+F.~Dehne, M.~Fellows, M.~Langston, F.~Rosamond, and K.~Stevens.
+\newblock An $o(2^{O(k)} n^3 )$ {FPT} algorithm for the undirected feedback
+  vertex set problem.
+\newblock In {\em Proc. 11th Int. Computing and Combinatorics Conf. (COCOON)},
+  pages 859--869. Springer LNCS 3595, 2005.
+
+\bibitem{DLX06}
+F.~Dehne, M.~Langston, X.~Luo, S.~Pitre, P.~Shaw, and Y.~Zhang.
+\newblock The cluster editing problem: Implementations and experiments.
+\newblock In {\em Proc. Int. Workshop on Parameterized and Exact Computation
+  (IWPEC)}, pages 13--24. Springer LNCS 4169, 2006.
+
+\bibitem{LDR07}
+M.~Lawrence, F.~Dehne, and A.~Rau-Chaplin.
+\newblock Implementing {OLAP} query fragment aggregation and recombination for
+  the {OLAP} enabled grid.
+\newblock In {\em Proc. International Parallel and Distributed Processing
+  Symposium (IPDPS), High-Performance Grid Computing Workshop}, pages 1--8.
+  IEEE Comp. Soc. Dig. Library, 2007.
+
+\bibitem{PD07}
+S.~Pitre, F.~Dehne, A.~Chan, J.~Cheetham, A.~Duong, A.~Emili, M.~Gebbia,
+  J.~Greenblatt, M.~Jessulat, N.~Krogan, X.~Luo, and A.~Golshani.
+\newblock {PIPE}: a protein-protein interaction prediction engine based on the
+  re-occurring short polypeptide sequences between known interacting protein
+  pairs.
+\newblock {\em BMC Bioinformatics}, 7:365 (15 pages), 2006, available via
+  PubMed at http://www.biomedcentral.com/pubmed/16872538.
+
+\end{thebibliography}

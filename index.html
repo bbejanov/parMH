@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+        <title>Prof. Frank Dehne</title>  
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>  
+<body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);" 
+                alink="#000000" link="#000000" vlink="#000000">
+    <table border="0" width="100%">
+        <tbody>
+            <tr>
+                <td height="27" width="45%">
+                    <h2>COMP 5704: Parallel Algorithms and Applications in Data Science<br></h2>
+                    </td>
+                <td height="27" width="10%">
+                    <p><br></p>
+                    </td>
+                <td height="27" width="45%">
+                    <p><b>School of Computer Science</b><br>
+                       <b>Carleton University, Ottawa, Canada</b></p>
+                    </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr noshade="noshade">
+            <h2><font color="#005128">Project Title: </font>
+                <font><font color="#005128">Parallel Metropolis-Hastings algorithms</font></font></h2>
+            <h2><font color="#005128">Name: Boyan Bejanov<br></font></h2>
+    <hr noshade="noshade">
+        
+    <b><font color="#005128">Project Outline:</font></b>
+       <p>
+        Metropolis-Hastings algorithm is a Markov chain algorithm for simulating random samples from 
+        multi-dimensional probability distributions for which direct sampling is difficult. 
+        Standard applications include the Markov Chain Monte Carlo method, Bayesian inference 
+        and others.  </p>
+       <p>
+        The parallelization of the Metropolis-Hastings algorithm is a hot topic of
+        both theoretical research and practical implementations.  The main difficulty is in the 
+        fact that Markov chains are, by definition, sequential in nature, because state <i>n+1</i> 
+        depends on state <i>n</i>.  In addition, the Markov chain's burn-in times become very long 
+        in high-dimensional problems, which renders the option of simulating multiple independent 
+        Markov chains impractical, because each chain must go through its own burn-in.  </p>
+       <p>
+        The objectives of this project include 
+        <ul>
+            <li> Survey the currently used methods and critically evaluate them. </li>
+            <li> Identify the most promising method and implement it. </li>
+            <li> Investigate the benefits of parallelization in terms of theoretical and 
+                 actually achieved speedups, applicability, 
+                 other relevant criteria. </li>
+        </ul>   </p>
+       
+
+    <p><b><font color="#005128">Startup Paper(s):</font></b> 
+        <ul><li>
+            <B><A HREF="http://www.econstor.eu/bitstream/10419/56330/1/618803564.pdf">
+                Adaptive hybrid Metropolis-Hastings samplers for DSGE models</A></B>,
+            <br>Strid, Ingvar & Giordani, Paolo & Kohn, Robert, 
+            <i> Working Paper Series in Economics and Finance, </i>            
+            724, Stockholm School of Economics, 2010.
+        </li><li>
+            <B><A HREF="http://www.sciencedirect.com/science/article/pii/S0167947309004320" target=_blank>Efficient parallelisation of Metropolis-Hastings algorithms using a prefetching approach</A></B>,
+            <br>Strid, Ingvar, 
+            <i>Computational Statistics & Data Analysis</i>,
+            Elsevier, vol. 54(11), pages 2814-2835, November, 2010.
+        
+        </li></ul>
+        </p>
+
+    <p><b><font color="#005128">Deliverables:</font></b></p>
+
+    <!--
+    <ul>
+
+        <li>
+            <div align="left"><a href="Literature_Review.pdf">
+                <font color="#000000">Literature Review</font></a> (PDF file created from LATEX template)</div>
+            </li>
+        <li>
+            <div align="left"><a href="Presentation_Outline.pdf">
+                <font color="#000000">Presentation Outline</font></a> (PDF file created from LATEX template)</div>
+            </li>
+        <li>
+            <div align="left"> <a href="Slide_Presentation.ppt">
+                <font color="#000000">Slide Presentation</font></a> (PowerPoint File) incl. Question Sheet </div>
+            </li>
+        <li>
+            <div align="left"><a href="Final_Paper.pdf">
+                <font color="#000000">Final Paper</font></a> (PDF file created from LATEX template)</div>
+            </li>
+        <li>
+            <a href="Code_and_Data"><font color="#000000">Code and Data</font></a>
+                (put all code, data, etc. into this directory)</li>
+    </ul>
+    -->
+    
+    <p><b><font color="#005128">Relevant References:</font></b></p>
+
+    <ul>
+        <li>
+            <b><a href="http://biostat.jhsph.edu/~mmccall/articles/chib_1995.pdf">
+                    Understanding the Metropolis-Hastings Algorithm </a></b>
+            <br>Siddhartha Chib and Edward Greenberg, 
+            <i>The American Statistician</i> , Vol. 49, No. 4 (Nov., 1995) , pp. 327-335
+        </li>
+    </ul>
+
+</body>
+</html>
