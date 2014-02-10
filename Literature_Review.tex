@@ -83,83 +83,92 @@ some random variable.  The expectation can be statistically estimated from a
 sample drawn from the same distribution as the underlying random variable and
 this estimate serves as the numerical approximation of the integral.  Needless
 to say, the MC methods are also applicable to problems other than numerical
-integrations, so long as they can be reduced to the evaluation of an expected
+integration, so long as they can be reduced to the evaluation of an expected
 value.  
 
 The successful application of MC relies on the availability of numerical
 techniques for simulation of random samples from a distribution, which is given
 by its probability density function (pdf).  We will denote this \emph{target}
-density by $\pi(x)$.  We always assume that we have a stream of independent
-random numbers with uniform distribution in the interval $(0,1)$.  For some of
-the other standard probability distributions there are direct methods of
-simulation, which perform some computation on the uniform random numbers, thus
-transforming them into random numbers of the desired distribution.  However,
-these techniques are limited to special cases.  One of the most important
-general sampling technique is the Acceptance-Rejection sampling (AR).  Each
-iteration of the AR goes in two steps.  We first simulate a random number, $X$,
-from another distribution, which we can simulate by another known method.  We
-call it \emph{proposal} density and denote by $q(x)$.  In the second step, we
-simulate a uniform random number and compare it to the adjusted ratio of the
-target and proposal densities.  Based on this comparison, we either accept $X$
-as a random number from $\pi$, or we reject and discard it.  The AR method is
-embarassingly parallel, and produces a sample of independednt random samples,
-which can be used directly in an MC method.  However its applicability is
-limited to the cases where $\pi(x)$ is given explicitly by a known formula.
-Even then, the computational efficiency of AR (as measured by the acceptance
-rate) depends on the choice of the proposal, $q(x)$, and a tight estimate of
-the adjustment constant in the AR test, both of which can require some
-non-trivial mathematical derivations, especially for multivatiate
-distributions.  
+pdf by $\pi(x)$.  It is always assumed that a stream of independent random
+numbers with uniform distribution in the interval $(0,1)$ is available without
+ado.  For some of the other common probability distributions there are direct
+methods of simulation, which perform some computation on the uniform random
+numbers, thus transforming them into random numbers of the desired
+distribution.  However, these techniques are limited to special cases.  One of
+the most important general sampling technique is the Acceptance-Rejection
+sampling (AR).  Each iteration of the AR goes in two steps.  We first simulate
+a random number, $X$, from another distribution, which we can simulate by
+another known method.  We call it \emph{proposal} density and denote its pdf by
+$q(x)$.  In the second step, we simulate a uniform random number and compare it
+to the adjusted ratio of the target and proposal densities.  Based on this
+comparison, we either accept $X$ as a random number from $\pi$, or we reject
+and discard it.  The AR method is embarrassingly parallel, since multiple
+random numbers can be simulated on multiple processors simultaneously.  In
+addition, it produces a sample of independent random samples, which can be used
+directly in an MC method.  However its applicability is limited to the cases
+where $\pi(x)$ is given explicitly by a known formula.  Even then, the
+computational efficiency of AR (as measured by the acceptance rate) depends on
+the choice of the proposal, $q(x)$, and a tight estimate of the adjustment
+constant in the AR test, both of which can require some non-trivial
+mathematical derivations, especially for multivariate distributions.  
 
 The method of choice in the cases of a multivariate distribution of high
-dimension, or when the target distribution formula is too complicated or can
-only be computed numerically, is the Markov Chain Monte Carlo method (MCMC).  A
-Markov Chain is a process, which is described by a \emph{state space}, i.e. the
-set of all possible values the process can take, and a transition rule, which
-may depend only on the current state, but not any earlier ones. It is known
-from the theory of Markov chains that if certain conditions are satisfied, then
-the process has an \emph{invariant distribution} and the distributions of
-successive states converge to the invariant distribution.  In the MCMC method,
-we construct a transition rule, such that the resulting Markov chain has an
-invariant distribution, and this invariant distribution is exactly $\pi(x)$.
-The initial part of the chain, before the distribution of states gets close
-enough to the invariant distribution, is known as \emph{burn-in} and is
-discarded.  The remaining chain can be used as the random sample in a Monte
-Carlo method, however with the caveat that it is not an independent random
-sample, so the auto-correlation of the process must to be taken into account.
+dimension, or when the formula for the target pdf is too complicated, or when
+the target pdf can only be computed numerically, is the Markov Chain Monte
+Carlo method (MCMC).  A Markov Chain is a process, which is described by a
+\emph{state space}, i.e. the set of all possible values the process can take,
+and a transition rule, which may depend only on the current state, but not any
+earlier ones. It is known from the theory of Markov chains that if certain
+conditions are satisfied, then the process has an \emph{invariant distribution}
+and the distributions of successive states converge to the invariant
+distribution.  In the MCMC method, we construct a transition rule, such that
+the resulting Markov chain has an invariant distribution, and this invariant
+distribution is exactly $\pi(x)$.  The initial part of the chain, before the
+distribution of states gets close enough to the invariant distribution, is
+known as \emph{burn-in} and is discarded.  The remaining chain can be used as
+the random sample in a Monte Carlo method, although with the caveat that it is
+not an independent random sample, so the auto-correlation of the process must
+be taken into account.  
+
+The AR, MCMC and other methods for simulation of random variables, as well as 
+the underlying mathematical theories, can be found in \cite{ross.simulation}.
+
 
 The Metropolis-Hastings algorithm (M-H) combines AR and MCMC.  Effectively, it
-is a recipe for constructing a Markov chain transition rule.  Once again we
-have a proposal distribution, however this time the proposal distribution
-depends on the current state of the chain, i.e. $q=q(x,y)$. The good news is
-that the accept-reject test is a ratio of the values of $q$ and $\pi$ at the
-current and the proposed points with no adjustment constants to be derived in
-advance.  If the proposed point is accepted, then it becomes the next state of 
-the chain, otherwise the next state is equal to the current state, i.e. no 
-points are discarded as it was the case in the AR sampling method.
+is a recipe for constructing the transition rule for a Markov chain given its
+invariant distribution.  Once again we have a proposal distribution, however
+this time the proposal distribution depends on the current state of the chain,
+i.e. $q=q(x,y)$. The good news is that the accept-reject test is a ratio of the
+values of $q$ and $\pi$ at the current and the proposed points with no
+adjustment constants to be derived in advance.  If the proposed point is
+accepted, then it becomes the next state of the chain, otherwise the next state
+is equal to the current state, i.e. no points are discarded as it was the case
+in the AR sampling method.  An intuitive and self-contained presentaion of the
+Metropolis-Hastings method can be found in \cite{understanding.MH}.
 
 Other than Monte Carlo type estimations of expected values, the M-H is a
 general method for simulating random samples from distributions that are
 otherwise impossible to simulate.  It is particularly popular for Bayesian
 analysis of complex stochastic models.  Such models always involve a number of
 parameters, which rarely can be derived from first principles.  More
-frequently, the paremeters are estimated from observed data using
+frequently, the parameters are estimated from observed data using
 maximum-likelihood, or some other methods of statistical estimation.  When the
 model is sufficiently complex, the usual inference based on confidence
-intervals for the estimated parameters is impossible to deriv.  In such cases,
+intervals for the estimated parameters is impossible to derive.  In such cases,
 the approach of Bayesian statistics is to consider the parameters as random
 variables,  simulate a sample from their joint distribution, and use this
 sample to infer the properties of the distribution that are of interest.
 
 The specific focus in this project is the application of M-H to Bayesian
 inference of large Dynamic Stochastic General Equilibrium models (DSGE), which
-are used in the field of macro-economics to simulate the economy.  The
+are used in the field of macro-economics (\cite{strid2010adaptive}).  The
 likelihood function is computed using a Kalman filter, which can be
 computationally very expensive, especially in the nonlinear case.  Therefore,
 when considering various methods, we will keep in mind the (simplifying)
-assumprion that the evaluation of $\pi(x)$ is much more time consuming than all
-the other computations in a single step (such as the computation of $q(x,y)$,
-simulation from $q(x,y)$, individual arithmetic operations). 
+assumption that the evaluation of $\pi(x)$ is much more time consuming than all
+the other computations in a single step of the Markov chain (such as the
+computation of $q(x,y)$, simulation from $q(x,y)$, individual arithmetic
+operations). 
 
 The objectives of this project include
 \begin{itemize}
@@ -175,17 +184,37 @@ The objectives of this project include
 \section{Literature Review} \label{litrev}
 % ############################################################################
 
+The search for parallel algorithms for M-H and other MCMC techniques has received
+much attention from the computational statistics community as well as from 
+researchers in various fields where MCMC find real-world applications.  
+Unfortunately, there seems to be little attention given to this question 
+in the world of computer science.
+
+In \cite{solonen2012efficient} the authors propose an \emph{adaptive} M-H
+method for estimation of a climate model, where multiple Markov chains are
+smiulated in parallel.  In an adaptive MCMC algorithm, the computed values of
+the target pdf are used to construct a better proposal distribution.  Each
+chain must undergo its own burn-in, therefore the time before the algorithm
+starts yielding useful output is the same as in the sequential case.  This
+greatly limits the gain in speedup due to parallelization.  However, the
+periodic updates to the proposal distribution in each chain use the values of
+the target density produced by all chains.  This way the algorithm produces
+higher quality proposal compared to the sequential version, thus improving the
+\emph{statistical efficiency} of the chain.
+
+Another recent application of parallel MCMC is presented in \cite{wu2012parallel}
+in the context of Bayesian models of animal breeding and genetics.
+Here the authors also consider multiple Markov chains running in parallel and acknowledge 
+that this is only applicable to single-parameter models and simpler models with 
+few parameters.  In the case of more complex models, they use parallel 
+computation of $\pi(x)$ by considering specific properties of the 
+particular model they consider.
+
+\cite{byrd2008reducing}
 
 
 
 
-Give an overview of the relevant literature. Cite all relevant
-papers, like \cite{DEL07}, \cite{PD07}, \cite{DER07}, \cite{LDR07},
-\cite{DLX06}, \cite{CDE06}, and \cite{DFL06}. Outline for each paper
-the relevant results in relation to your project. Make sure that you
-don't just list all relevant papers in random order. Devise a scheme
-to group papers by subject. The goal is to present to the reader the
-state-of-the-art in the field selected for your project.
 
 
 % ############################################################################
