@@ -1,8 +1,8 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{byrd2008reducing}
 Jonathan~MR Byrd, Stephen~A Jarvis, and Abhir~H Bhalerao.
-\newblock Reducing the run-time of mcmc programs by multithreading on smp
+\newblock Reducing the run-time of {MCMC} programs by multithreading on {SMP}
   architectures.
 \newblock In {\em Parallel and Distributed Processing, 2008. IPDPS 2008. IEEE
   International Symposium on}, pages 1--8. IEEE, 2008.
@@ -11,6 +11,18 @@ Jonathan~MR Byrd, Stephen~A Jarvis, and Abhir~H Bhalerao.
 Siddhartha Chib and Edward Greenberg.
 \newblock Understanding the {M}etropolis-{H}astings algorithm.
 \newblock {\em The American Statistician}, 49(4):327--335, 1995.
+
+\bibitem{guo2012parallel}
+Guangbao Guo.
+\newblock Parallel statistical computing for statistical inference.
+\newblock {\em Journal of Statistical Theory and Practice}, 6(3):536--565,
+  2012.
+
+\bibitem{miller2010markov}
+Guthrie Miller.
+\newblock {M}arkov {C}hain {M}onte {C}arlo calculations allowing parallel
+  processing using a variant of the metropolis algorithm.
+\newblock {\em Open Numer Methods J}, 2:12--7, 2010.
 
 \bibitem{ross.simulation}
 Sheldon~M. Ross.
@@ -24,11 +36,23 @@ Antti Solonen, Pirkka Ollinaho, Marko Laine, Heikki Haario, Johanna Tamminen,
   adaptive chains and early rejection.
 \newblock {\em Bayesian Analysis}, 7(3):715--736, 2012.
 
+\bibitem{strid2010efficient}
+Ingvar Strid.
+\newblock Efficient parallelisation of {M}etropolis--{H}astings algorithms
+  using a prefetching approach.
+\newblock {\em Computational Statistics \& Data Analysis}, 54(11):2814--2835,
+  2010.
+
 \bibitem{strid2010adaptive}
 Ingvar Strid, Paolo Giordani, and Robert Kohn.
 \newblock Adaptive hybrid {M}etropolis-{H}astings samplers for {DSGE} models.
 \newblock Technical report, SSE/EFI Working Paper Series in Economics and
   Finance, 2010.
+
+\bibitem{vanderwerken2013parallel}
+Douglas~N VanDerwerken and Scott~C Schmidler.
+\newblock Parallel {M}arkov {C}hain {M}onte {C}arlo.
+\newblock {\em arXiv preprint arXiv:1312.7479}, 2013.
 
 \bibitem{wu2012parallel}
 Xiao-Lin Wu, Chuanyu Sun, Timothy~M Beissinger, Guilherme~JM Rosa, Kent~A

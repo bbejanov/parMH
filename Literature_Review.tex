@@ -93,19 +93,19 @@ pdf by $\pi(x)$.  It is always assumed that a stream of independent random
 numbers with uniform distribution in the interval $(0,1)$ is available without
 ado.  For some of the other common probability distributions there are direct
 methods of simulation, which perform some computation on the uniform random
-numbers, thus transforming them into random numbers of the desired
-distribution.  However, these techniques are limited to special cases.  One of
-the most important general sampling technique is the Acceptance-Rejection
-sampling (AR).  Each iteration of the AR goes in two steps.  We first simulate
-a random number, $X$, from another distribution, which we can simulate by
-another known method.  We call it \emph{proposal} density and denote its pdf by
+numbers, transforming them into random numbers of the desired distribution.
+However, these techniques are limited to special cases.  One of the most
+important general sampling technique is the Acceptance-Rejection sampling (AR).
+Each iteration of the AR goes in two steps.  We first simulate a random number,
+$X$, from some other distribution, which can be simulated by an already known
+method.  We call this distribution \emph{proposal} and denote its pdf by
 $q(x)$.  In the second step, we simulate a uniform random number and compare it
 to the adjusted ratio of the target and proposal densities.  Based on this
 comparison, we either accept $X$ as a random number from $\pi$, or we reject
 and discard it.  The AR method is embarrassingly parallel, since multiple
 random numbers can be simulated on multiple processors simultaneously.  In
-addition, it produces a sample of independent random samples, which can be used
-directly in an MC method.  However its applicability is limited to the cases
+addition, it produces a sample of independent random numbers, which can be used
+directly in an MC method.  However, its applicability is limited to the cases
 where $\pi(x)$ is given explicitly by a known formula.  Even then, the
 computational efficiency of AR (as measured by the acceptance rate) depends on
 the choice of the proposal, $q(x)$, and a tight estimate of the adjustment
@@ -118,32 +118,32 @@ the target pdf can only be computed numerically, is the Markov Chain Monte
 Carlo method (MCMC).  A Markov Chain is a process, which is described by a
 \emph{state space}, i.e. the set of all possible values the process can take,
 and a transition rule, which may depend only on the current state, but not any
-earlier ones. It is known from the theory of Markov chains that if certain
-conditions are satisfied, then the process has an \emph{invariant distribution}
-and the distributions of successive states converge to the invariant
-distribution.  In the MCMC method, we construct a transition rule, such that
-the resulting Markov chain has an invariant distribution, and this invariant
-distribution is exactly $\pi(x)$.  The initial part of the chain, before the
-distribution of states gets close enough to the invariant distribution, is
-known as \emph{burn-in} and is discarded.  The remaining chain can be used as
-the random sample in a Monte Carlo method, although with the caveat that it is
-not an independent random sample, so the auto-correlation of the process must
-be taken into account.  
+earlier ones. It is known from the theory of Markov chains that, if certain
+conditions are satisfied, the process has an \emph{invariant distribution} and
+the distributions of successive states converge to the invariant distribution.
+In the MCMC method, we construct a transition rule, such that the resulting
+Markov chain has an invariant distribution, and this invariant distribution is
+exactly $\pi(x)$.  The initial part of the chain, before the distribution of
+states gets close enough to the invariant distribution, is known as
+\emph{burn-in} and is discarded.  The remaining chain can be used as the random
+sample in a Monte Carlo method, although with the caveat that it is not an
+independent random sample, so the auto-correlation of the process must be taken
+into account.  
 
-The AR, MCMC and other methods for simulation of random variables, as well as 
+The AR, MCMC and other methods for simulation of random variables, as well as
 the underlying mathematical theories, can be found in \cite{ross.simulation}.
 
 
 The Metropolis-Hastings algorithm (M-H) combines AR and MCMC.  Effectively, it
-is a recipe for constructing the transition rule for a Markov chain given its
-invariant distribution.  Once again we have a proposal distribution, however
-this time the proposal distribution depends on the current state of the chain,
-i.e. $q=q(x,y)$. The good news is that the accept-reject test is a ratio of the
-values of $q$ and $\pi$ at the current and the proposed points with no
+is a recipe for constructing the transition rule of a Markov chain given its
+desired invariant distribution.  Once again, we have a proposal distribution,
+however this time the proposal distribution depends on the current state of the
+chain, i.e. $q=q(x;y)$. The good news is that the accept-reject test is a ratio
+of the values of $q$ and $\pi$ at the current and the proposed points with no
 adjustment constants to be derived in advance.  If the proposed point is
 accepted, then it becomes the next state of the chain, otherwise the next state
 is equal to the current state, i.e. no points are discarded as it was the case
-in the AR sampling method.  An intuitive and self-contained presentaion of the
+in the AR sampling method.  An intuitive and self-contained presentation of the
 Metropolis-Hastings method can be found in \cite{understanding.MH}.
 
 Other than Monte Carlo type estimations of expected values, the M-H is a
@@ -174,7 +174,7 @@ The objectives of this project include
 \begin{itemize}
 \item Survey the existing methods and evaluate them.
 \item Identify the most promising method, for the particular setting we have, and implement it.
-\item Investigate the benefits of parallelization in terms of theoretical and
+\item Investigate the benefits of parallelisation in terms of theoretical and
      practically achieved speedup.
 \item Consider the question of P-completeness of the M-H algorithm.
 \end{itemize}
@@ -186,29 +186,71 @@ The objectives of this project include
 
 The search for parallel algorithms for M-H and other MCMC techniques has received
 much attention from the computational statistics community as well as from 
-researchers in various fields where MCMC find real-world applications.  
+researchers in various fields where MCMC finds real-world applications.  
 Unfortunately, there seems to be little attention given to this question 
 in the world of computer science.
 
 In \cite{solonen2012efficient} the authors propose an \emph{adaptive} M-H
 method for estimation of a climate model, where multiple Markov chains are
-smiulated in parallel.  In an adaptive MCMC algorithm, the computed values of
+simulated in parallel.  In an adaptive MCMC algorithm, the computed values of
 the target pdf are used to construct a better proposal distribution.  Each
 chain must undergo its own burn-in, therefore the time before the algorithm
 starts yielding useful output is the same as in the sequential case.  This
-greatly limits the gain in speedup due to parallelization.  However, the
+greatly limits the gain in speedup due to parallelisation.  However, the
 periodic updates to the proposal distribution in each chain use the values of
 the target density produced by all chains.  This way the algorithm produces
 higher quality proposal compared to the sequential version, thus improving the
 \emph{statistical efficiency} of the chain.
 
-Another recent application of parallel MCMC is presented in \cite{wu2012parallel}
-in the context of Bayesian models of animal breeding and genetics.
-Here the authors also consider multiple Markov chains running in parallel and acknowledge 
-that this is only applicable to single-parameter models and simpler models with 
-few parameters.  In the case of more complex models, they use parallel 
-computation of $\pi(x)$ by considering specific properties of the 
+Another recent application of parallel MCMC is presented in
+\cite{wu2012parallel} in the context of Bayesian models of animal breeding and
+genetics.  Here the authors also consider multiple Markov chains running in
+parallel and acknowledge that this is only applicable to single-parameter
+models and simpler models with few parameters.  In the case of more complex
+models, they use parallel computation of $\pi(x)$ by leveraging specific
+properties of the 
 particular model they consider.
+
+A modified M-H algorithm is presented in \cite{miller2010markov}.  It simulates
+a single Markov chain with improved  statistical properties by considering
+multiple proposal points at each step.  The proposals are computed in  parallel
+and one of them is randomly selected to be the next state.  This allows for
+better coverage of the state space, i.e. reduced burn-in time.  However, the
+time for computing one step is the same as in the sequential 
+M-H algorithm.
+
+
+In \cite{vanderwerken2013parallel}, the authors propose a parallel MCMC method
+which is only applicable to numerical integration.  The state space is
+partitioned into disjoint regions and the total integral is evaluated as the
+sum of the integrals over the individual regions. A separate Markov chain is
+simulated for each region in parallel.  The clever innovation of this method is
+that it allows the chains to leave their respective regions and are recombined
+afterwards.  This considerably simplifies previous methods using partitioning,
+which must contain the individual chains within their regions.  Unfortunately,
+this method is not applicable in our case, since it only computes the
+expectation, but doesn't produce a random sample.
+
+In general the parallel MCMC methods can be divided into methods using multiple
+independent chains that are simulated in parallel and methods that simulate a
+single chain in parallel.  All of the methods discussed so far are in the first
+category.  The paper \cite{guo2012parallel} contains a recent and detailed
+overview of parallel MCMC methods based on multiple chains.
+
+The single chain parallel methods can be further subdivided into \emph{within
+draw} and \emph{between draw} parallelisation, as suggested in
+\cite{strid2010efficient}.  In the former class of methods multiple processors
+collaborate on a single computation of the target density.  Clearly this
+approach is problem-specific.  The between draw parallel methods rely on
+pre-computing the values of the target density at multiple proposed points  in
+parallel ahead of time.  Several accept-reject iterations are then carried out
+sequentially as usual.  
+
+regeneration times
+
+independence proposal
+
+Pre-fetching
 
 \cite{byrd2008reducing}
 
