@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Arch Linux) (format=pdflatex 2014.2.8)  13 FEB 2014 20:51
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Arch Linux) (format=pdflatex 2014.2.8)  17 FEB 2014 23:43
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -175,27 +175,28 @@ Overfull \hbox (3.83308pt too wide) in paragraph at lines 177--179
  of the-o-ret-i-cal and prac-ti-cally achieved
  []
 
-[2] (./Literature_Review.bbl [3]) [4] (./Literature_Review.aux) ) 
+[2] [3] (./Literature_Review.bbl [4]) [5] (./Literature_Review.aux) ) 
 Here is how much of TeX's memory you used:
- 1599 strings out of 493311
- 22477 string characters out of 6143651
- 82822 words of memory out of 5000000
- 5050 multiletter control sequences out of 15000+600000
+ 1606 strings out of 493311
+ 22636 string characters out of 6143651
+ 82850 words of memory out of 5000000
+ 5057 multiletter control sequences out of 15000+600000
  9313 words of font info for 35 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  37i,6n,23p,239b,226s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/share/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/
-amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
-12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/sh
-are/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist
-/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texmf-dist/fonts/type1/p
-ublic/amsfonts/cm/cmti12.pfb>
-Output written on Literature_Review.pdf (4 pages, 114845 bytes).
+</usr/shar
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-dist/f
+onts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmmi8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></us
+r/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmti10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmti12.pfb>
+Output written on Literature_Review.pdf (5 pages, 127098 bytes).
 PDF statistics:
- 49 PDF objects out of 1000 (max. 8388607)
- 34 compressed objects within 1 object stream
+ 56 PDF objects out of 1000 (max. 8388607)
+ 39 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

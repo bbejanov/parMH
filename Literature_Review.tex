@@ -206,10 +206,9 @@ Another recent application of parallel MCMC is presented in
 \cite{wu2012parallel} in the context of Bayesian models of animal breeding and
 genetics.  Here the authors also consider multiple Markov chains running in
 parallel and acknowledge that this is only applicable to single-parameter
-models and simpler models with few parameters.  In the case of more complex
-models, they use parallel computation of $\pi(x)$ by leveraging specific
-properties of the 
-particular model they consider.
+models and simpler models with few parameters, where the burn-in is small.  In
+the case of more complex models, they use parallel computation of $\pi(x)$ by
+leveraging specific properties of the particular model they consider.
 
 A modified M-H algorithm is presented in \cite{miller2010markov}.  It simulates
 a single Markov chain with improved  statistical properties by considering
@@ -224,12 +223,13 @@ In \cite{vanderwerken2013parallel}, the authors propose a parallel MCMC method
 which is only applicable to numerical integration.  The state space is
 partitioned into disjoint regions and the total integral is evaluated as the
 sum of the integrals over the individual regions. A separate Markov chain is
-simulated for each region in parallel.  The clever innovation of this method is
-that it allows the chains to leave their respective regions and are recombined
-afterwards.  This considerably simplifies previous methods using partitioning,
-which must contain the individual chains within their regions.  Unfortunately,
-this method is not applicable in our case, since it only computes the
-expectation, but doesn't produce a random sample.
+simulated for each region and all chains run in parallel.  The clever
+innovation of this method is that it allows the chains to leave their
+respective regions and are recombined afterwards.  This considerably simplifies
+previous methods using partitioning, which must contain the individual chains
+within their regions.  Unfortunately, this method is not applicable in our
+case, since it only computes the expectation, but doesn't produce a random
+sample.
 
 In general the parallel MCMC methods can be divided into methods using multiple
 independent chains that are simulated in parallel and methods that simulate a
@@ -241,20 +241,58 @@ The single chain parallel methods can be further subdivided into \emph{within
 draw} and \emph{between draw} parallelisation, as suggested in
 \cite{strid2010efficient}.  In the former class of methods multiple processors
 collaborate on a single computation of the target density.  Clearly this
-approach is problem-specific.  The between draw parallel methods rely on
-pre-computing the values of the target density at multiple proposed points  in
-parallel ahead of time.  Several accept-reject iterations are then carried out
-sequentially as usual.  
+approach is problem-specific.  The between draw parallel methods are
+characterized by considering multiple future steps of the chain and
+pre-computing the necessary values of the target density in parallel. 
 
-regeneration times
+A Metropolis-Hastings algorithm whose proposal density does not depend on the
+current state of the Markov chain is called \emph{Independence}
+Metropolis-Hastings (IMH).  In this case the between-draw parallelisation is
+straight-forward.  Unfortunately, a good independence proposal is difficult to
+construct beforehand.  Instead, in the method proposed in
+\cite{strid2010adaptive}, an independence proposal is estimated from the values
+of $\pi$ that have already been computed.  As the chain runs, the independence
+proposal is adapted to any new information about the target density.  However,
+the Markov chain must start with a non-independence proposal.  At each
+adaptation point, the adapted proposal is constructed as a mixture of the newly
+re-estimated independence proposal and the non-independence proposal, with the
+relative weight of the independence proposal gradually increasing.  See also
+\cite{holden2009adaptive} and \cite{giordani2010adaptive}, which suggest
+similar algorithms with different approaches to constructing the independence
+proposal.  Many other examples of adaptive MCMC can be found in
+\cite{roberts2009examples}.
 
-independence proposal
+A regeneration time in a Markov chain is a time when the state is independent of
+the history of the chain up to that point.  The pieces of the chain between two
+regeneration times are called \emph{tours} and are independent and identically
+distributed entities.  This allows multiple tours of the chain to be simulated
+in parallel, each starting from a regeneration time and running until the next
+recreation time is encountered.  The tours are then concatenated to form a
+single long chain.  Although a wide class of Markov chain are regenerative, the
+identification of regeneration points is very difficult (cf.
+\cite{mykland1995regeneration} and \cite{gilks1998adaptive}).  More recently,
+\cite{brockwell2005identification} proposed a constructive method of
+identifying regeneration times in the context of parallel MH.  Using
+regeneration is only advantageous for low- and moderately-dimensional
+distribution, because the expected length of the tour increases dramatically
+with dimension.  
 
-Pre-fetching
-
-\cite{byrd2008reducing}
-
-
+A recent algorithm, proposed in \cite{brockwell2006parallel}, is called 
+pre-fetching.  Suppose the Markov chain of an MH algorithm is at some state
+$X_n$ at some time $n$.  All possible trajectories for the next $h$ steps 
+form a full binary tree with root $X_n$ and depth $h$.  At each node 
+the two edges correspond to "accept" and "reject".  
+There are $2^h$ possible paths and a total of $2^h$ different 
+proposal states in the tree.  The idea of pre-fetching is to compute the values of $\pi$
+at the $2^h$ proposals in parallel and then perform the $h$ accept-reject 
+steps sequentially on the master process.  In \cite{strid2010efficient} 
+the authors suggest an improvement of this algorithm, whereby only the most probable 
+paths are pre-fetched, thus reducing the number of required processors, although at
+the risk that fewer than $h$ may be completed.  Another method suggested in 
+\cite{byrd2008reducing} can be interpreted as a special case of this methodology 
+suggested in \cite{strid2010efficient}.  The authors leverage the fact that the optimal 
+acceptance rate (from probabilistic point of view) is usually low and pre-fetch 
+only the "reject" branches.
 
 
 
