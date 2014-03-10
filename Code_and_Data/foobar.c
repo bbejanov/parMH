@@ -46,7 +46,8 @@ void urand(int *which_gar, int *num_vals, double *vals)
    }
 
    while ( w > num_gars ) {
-      if(DEBUG) printf("Initializing stream %d\n", ++num_gars);
+      ++num_gars;
+      if(DEBUG) printf("Initializing stream %d\n", num_gars);
       gar[num_gars] = init_stream();
    }
 
