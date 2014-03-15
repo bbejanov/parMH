@@ -4,28 +4,44 @@ CXX=icpc
 FC=ifort
 F77=ifort
 F90=ifort
-CFLAGS=-O3 -xhost -fp-model precise -openmp -I/cluster/prod/include -fPIC -mkl=parallel
-CXXFLAGS=$(CFLAGS)
-FFLAGS=-O3 -xhost -fp-model precise -openmp -I/cluster/prod/include -fPIC -mkl=parallel
-FCFLAGS=$(FFLAGS)
-F90FLAGS=$(FFLAGS)
 
+my_flags = -g -O0 -xhost -fp-model precise -I/cluster/prod/include -fPIC -mkl=sequential 
+#my_flags = -O3 -xhost -fp-model precise -fPIC -I$(MKLROOT)/include \
+#           -I/cluster/prod/include 
+CFLAGS += $(my_flags)
+CXXFLAGS += $(my_flags)
+FFLAGS += $(my_flags)
+FCFLAGS += $(my_flags)
+F90FLAGS += $(my_flags)
 
 LD=xild
-#LDFLAGS=
 AR=xiar
 
-LIBS=/cluster/prod/lib/librngstreams.a
 
-gaussian.so : gaussian.o
-	$(CC) $(CFLAGS) -shared -static-intel $(LDFLAGS) -o $@ $< $(LIBS)
+LDFLAGS += -L/cluster/prod/lib -Wl,-rpath,/cluster/prod/lib
+LDFLAGS += -mkl=sequential 
+#LDFLAGS += -Wl,--start-group $(MKLROOT)/lib/intel64/libmkl_intel_lp64.a \
+#                             $(MKLROOT)/lib/intel64/libmkl_core.a \
+#                             $(MKLROOT)/lib/intel64/libmkl_sequential.a \
+#                             -Wl,--end-group -lpthread -lm
+LIBS += -lrngstreams 
+
+%.so : 
+	$(CC) $(CFLAGS) -shared -static-intel $(LDFLAGS) -o $@ $^ $(LIBS)
+
+libgaussian.so : gaussian.so
+	-ln -fs gaussian.so libgaussian.so
+
+gaussian.so : gaussian.o rngs_utils.o mh.o
 
 libfoobar.so : foobar.o
-	$(CC) $(CFLAGS) -shared -static-intel $(LDFLAGS) -o $@ $< $(LIBS)
 
+main : main.c libgaussian.so
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< $(LIBS) -L. -Wl,-rpath,. -lgaussian
 
+.PHONY : clean
 clean : 
-	rm -f *.o *.mod *.so
+	-rm -f *.o *.mod *.so
 
 
 
