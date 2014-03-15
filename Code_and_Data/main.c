@@ -26,6 +26,8 @@
 #include "mh.h"
 #include "gaussian.h"
 
+#include <mkl.h>
+
 void print_matrix(const char *name, const double *mat, int n, int m) {
     int i, j;
     printf("%s:\n", name);
@@ -78,15 +80,18 @@ int main(int argc, char **argv)
     mvn_logpdf(&n, rand_vals, lp_vals, &dim, mean, sqrt_var);
     print_matrix("lp values", lp_vals, n, 1);
 
-    double chain[N*2];
-    double start[2] = {0.0, 0.0};
-    int accepted[N];
-    double prop_var[4] = { 1.0, 0.0, 0.0, 1.0 };
+    n = 20000;
     dim = 2;
+    double *chain = (double*) mkl_malloc(n*dim*sizeof(double), 64);
+    double start[2] = {0.0, 0.0};
+    int *accepted = (int *) malloc(n*sizeof(int));
+    double prop_var[4] = { 1.0, 0.0, 0.0, 1.0 };
     rwmh_chain(&n, &dim, start, target_example_1,  NULL, 
         prop_var, chain, accepted);
-    print_chain("Chain", chain, accepted, n, 2);
+    print_chain("Chain", chain, accepted, n, dim);
 
-	return 0;
+    mkl_free(chain);
+    free(accepted);
+    return 0;
 }
 
