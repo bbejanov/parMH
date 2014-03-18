@@ -1,6 +1,10 @@
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdarg.h>
+#include <time.h>
+#include <math.h>
+#include <assert.h>
 #include "rngs_utils.h"
 
 /** define global integer constrant */
@@ -95,3 +99,43 @@ void rngs_set_random_seed()
     RngStream_SetPackageSeed(seed);
 }
 
+void mnrand0(const int *which_gar, int *n, int *vals, 
+        const int *num_bins, const double *prob_bins)
+{
+    double cs[num_bins[0]];
+    int b, i, j;
+    
+    RngStream gar;
+    /** get a stream **/
+    gar = get_gar(which_gar[0]);
+    if (gar == NULL) { 
+        n[0]=0; 
+        return;
+    }
+    assert(prob_bins[0] >= 0.0);
+    cs[0] = prob_bins[0];
+    for(i=1; i<num_bins[0]; ++i) {
+        assert(prob_bins[i] >= 0.0);
+        cs[i] = cs[i-1] + prob_bins[i];
+    }
+    if ( fabs(cs[num_bins[0]-1] - 1.0) > 1e-14 ) {
+        for(i=0; i<num_bins[0]; ++i) {
+            cs[i] /= cs[num_bins[0]-1];
+        }
+    }
+    for(i=0 ; i<n[0]; ++i) {
+        double U = RngStream_RandU01(gar);
+        for(j=0; U > cs[j]; ++j) 
+            {}
+        vals[i] = j;
+    }
+    return;    
+}
+
+void mnrand(const int *which_gar, int *n, int *vals, 
+        const int *num_bins, const double *prob_bins)
+{
+    int i;
+    mnrand0(which_gar, n, vals, num_bins, prob_bins);
+    for(i=0; i<n[0]; ++i) ++vals[i];
+}

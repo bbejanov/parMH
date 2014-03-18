@@ -84,3 +84,24 @@ foo <- dmvnorm(QQ, mean, var, log=TRUE)
 
 print(err <- max(abs(foo-ret$lp)))
 stopifnot(err < 1e-14)
+
+cat("==============================================\n")
+
+n <- 2000
+pr <- c(0.8, 0.2)
+mu <- c(-3, 0, 1, 4)
+vars <- c(1, 0, 0, 1, 4, 0, 0, 4)
+sqv <- sqrt(vars)
+ret <- .C("mvnm_rand", w=as.integer(0), n=as.integer(n), vals=as.double(rep(0,2*n)), k=as.integer(length(pr)), as.double(pr), as.integer(length(mu)/length(pr)), as.double(mu), as.double(sqv), DUP=FALSE)
+QQ <- matrix(ret$vals, n, 2)
+plot(QQ[,1], QQ[,2])
+qqplot(QQ[,1], QQ[,2])
+hist(QQ[,1], breaks=50)
+hist(QQ[,2], breaks=50)
+
+ret <- .C("mvnm_pdf", n=as.integer(n), as.double(QQ), p=as.double(rep(0,n)), as.integer(length(pr)), as.double(pr), as.integer(length(mu)/length(pr)), as.double(mu), as.double(sqv), DUP=FALSE)
+write.csv(data.frame(QQ,ret$p), file="surface.csv")
+cat('scatter-plot the data in surface.csv to see that it makes sense\n')
+
+
+

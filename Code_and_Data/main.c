@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include "mh.h"
+#include "rngs_utils.h"
 #include "gaussian.h"
 
 #include <mkl.h>
@@ -82,15 +83,17 @@ int main(int argc, char **argv)
 
     n = 20000;
     dim = 2;
-    double *chain = (double*) mkl_malloc(n*dim*sizeof(double), 64);
+    double *chain = (double*) malloc(n*dim*sizeof(double));
     double start[2] = {0.0, 0.0};
     int *accepted = (int *) malloc(n*sizeof(int));
     double prop_var[4] = { 1.0, 0.0, 0.0, 1.0 };
+    
     rwmh_chain(&n, &dim, start, target_example_1,  NULL, 
         prop_var, chain, accepted);
+        
     print_chain("Chain", chain, accepted, n, dim);
 
-    mkl_free(chain);
+    free(chain);
     free(accepted);
     return 0;
 }

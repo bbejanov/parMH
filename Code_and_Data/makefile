@@ -5,7 +5,7 @@ FC=ifort
 F77=ifort
 F90=ifort
 
-my_flags = -g -O0 -xhost -fp-model precise -I/cluster/prod/include -fPIC -mkl=sequential 
+my_flags = -std=gnu99 -g -O0 -xhost -fp-model precise -I/cluster/prod/include -fPIC -mkl=sequential 
 #my_flags = -O3 -xhost -fp-model precise -fPIC -I$(MKLROOT)/include \
 #           -I/cluster/prod/include 
 CFLAGS += $(my_flags)
@@ -27,7 +27,7 @@ LDFLAGS += -mkl=sequential
 LIBS += -lrngstreams 
 
 %.so : 
-	$(CC) $(CFLAGS) -shared -static-intel $(LDFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) -shared $(LDFLAGS) -o $@ $^ $(LIBS)
 
 libgaussian.so : gaussian.so
 	-ln -fs gaussian.so libgaussian.so

@@ -58,6 +58,13 @@ void mvn_pdf(const int *n, const double *x, double *pdf,
         const int *dim, const double *mean, const double *sqrt_var);
 
 
+/* Themultivariate normal mixture, a.k.a. mixture of mvn */
 
+void mvnm_rand(const int *which_gar, int *n, double *rvals,
+        const int *num_modes, const double *weights, 
+        const int *dim, const double *means, const double *sqrt_vars);
+void mvnm_pdf(const int *n, const double *x, double *pdf, 
+        const int *num_modes, const double *weights, 
+        const int *dim, const double *means, const double *sqrt_vars);
 
 #endif
