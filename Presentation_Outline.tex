@@ -25,18 +25,15 @@
 % Title
 % ############################################################################
 
-\title{PRESENTATION OUTLINE: --- Your Project Title ---}
-
+\title{Parallel Metropolis-Hastings Algorithms}
+\date{March 2014}
 
 % ############################################################################
 % Author(s) (no blank lines !)
 \author{
 % ############################################################################
-John Doe\\
-School of Computer Science\\
-Carleton University\\
-Ottawa, Canada K1S 5B6\\
-{\em John-Doe@scs.carleton.ca}
+Boyan Bejanov\\
+{\em bbejanov@bankofcanada.ca}
 % ############################################################################
 } % end-authors
 % ############################################################################
@@ -44,23 +41,106 @@ Ottawa, Canada K1S 5B6\\
 \maketitle
 
 % ############################################################################
-\begin{slide}{Title of my first slide}
-\item first thing
-\item second thing
-\item third thing
-\item fourth thing
+\begin{slide}{Title slide}
+\item Parallel Metropolis-Hasting Algorithms
+\item author info
+\item course info
+\item date of presentation
+\end{slide}
+
+\begin{slide}{Motivation (1 or 2 slides)}
+\item Examples of applications of MCMC and M-H
+\end{slide}
+
+\begin{slide}{Agenda for today}
+\item Background on Markov chains and M-H
+\item Parallelization approaches
+\item Prefetching
+
+\end{slide}
+
+\begin{slide}{Markov Chains, definition}
+\item Markovian property
+\item transition kernels
+\end{slide}
+
+\begin{slide}{Markov Chains, properties}
+\item ergodicity
+\item limiting distributions
+\end{slide} 
+
+\begin{slide}{Metropolis-Hastings (2 slides)}
+\item Description of the algorithm
+\end{slide}
+
+\begin{slide}{Assumptions / Goals}
+\item target distribution is high-dimensional 
+\item computation of target density is the most expensive operation
+\item chain has long burn-in period
+\item algorithm is not specific to a narrow class of chains
+\end{slide}
+
+\begin{slide}{Parallel M-H approaches}
+\item Caveats of multiple independent chains
+\item Within-draw vs. between-draw parallelization of single chain
+\item references
+\end{slide}
+
+\begin{slide}{Parallel M-H approaches (cont'd)}
+\item Independence Metropolis-Hastings
+\item description
+\item difficulties: ergodicity problems, feasibility problem
+\item adaptation
+\item references
+\end{slide}
+
+\begin{slide}{Parallel M-H approaches (cont'd)}
+\item Independent tours
+\item regeneration times: definition, advantages, difficulties
+\item references
+\end{slide}
+
+\begin{slide}{Parallel M-H approaches (cont'd)}
+\item Prefetching
+\item description (general, hand-waiving)
+\item benefits, caveats 
+\item references
+\end{slide}
+
+\begin{slide}{The Method of Choice}
+\item Parallel prefetching is the method of choice: explain why? 
+\end{slide}
+
+\begin{slide}{Prefetching}
+\item proper description
+\item variants:  Brockwell 2006, Byrd et. al. 2008, Strid 2010
+\end{slide}
+
+\begin{slide}{Analysis}
+\item complexity math
+\end{slide}
+
+\begin{slide}{Analysis (cont'd)}
+\item P-completeness (1-2 slides max)
+\end{slide} 
+
+\begin{slide}{Implementation details}
+\item General remarks (2-3 slides max)
+\end{slide}
+
+\begin{slide}{Implementation details}
+\item Multicore: Cilk
+\end{slide}
+
+\begin{slide}{Implementation details}
+\item Multicore: OpenMP
+\end{slide}
+
+\begin{slide}{Implementation details}
+\item Coarse grained cluster: MPI
 \end{slide}
 
 
-% ############################################################################
-\begin{slide}{Title of my second slide}
-\item first thing
-\item second thing
-\item third thing
-\item fourth thing
-\end{slide}
-
-\noindent ... more slides ...
 
 % ############################################################################
 % Bibliography
