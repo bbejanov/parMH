@@ -48,25 +48,29 @@ Boyan Bejanov\\
 \item date of presentation
 \end{slide}
 
-\begin{slide}{Motivation (1 or 2 slides)}
-\item Examples of applications of MCMC and M-H
+\begin{slide}{Motivation \emph{(1-2 slides)}    }
+\item Examples of applications of Markov chain Monte Carlo (MCMC) and 
+    Metropolis-Hastings (M-H)
 \end{slide}
 
-\begin{slide}{Agenda for today}
-\item Background on Markov chains and M-H
-\item Parallelization approaches
-\item Prefetching
-
+\begin{slide}{Outline}
+\item Background on Markov chains and the M-H algorithm \emph{(4 slides)}
+\item Parallelization Approaches \emph{(4 slides)}
+\item Prefetching Algorithm (2 slides)
+\item Analysis  (2-3 slides)
+\item Implementation details  (5-6 slides)
+\item Computational experiments  (4-5 slides)
+\item Conclusion 
 \end{slide}
 
 \begin{slide}{Markov Chains, definition}
 \item Markovian property
-\item transition kernels
+\item Transition kernels
 \end{slide}
 
 \begin{slide}{Markov Chains, properties}
-\item ergodicity
-\item limiting distributions
+\item Ergodicity
+\item Limiting distributions
 \end{slide} 
 
 \begin{slide}{Metropolis-Hastings (2 slides)}
@@ -74,15 +78,15 @@ Boyan Bejanov\\
 \end{slide}
 
 \begin{slide}{Assumptions / Goals}
-\item target distribution is high-dimensional 
-\item computation of target density is the most expensive operation
-\item chain has long burn-in period
-\item algorithm is not specific to a narrow class of chains
+\item Target distribution is high-dimensional 
+\item Computation of target density is the most expensive operation
+\item Chain has long burn-in period
+\item Algorithm is general, not specific to a narrow class of chains
 \end{slide}
 
 \begin{slide}{Parallel M-H approaches}
-\item Caveats of multiple independent chains
-\item Within-draw vs. between-draw parallelization of single chain
+\item Multiple independent chains: caveats
+\item Single chain: within-draw vs. between-draw parallelization
 \item references
 \end{slide}
 
@@ -90,7 +94,7 @@ Boyan Bejanov\\
 \item Independence Metropolis-Hastings
 \item description
 \item difficulties: ergodicity problems, feasibility problem
-\item adaptation
+\item \emph{(mention adaptation to transition to next slide)}
 \item references
 \end{slide}
 
@@ -102,13 +106,12 @@ Boyan Bejanov\\
 
 \begin{slide}{Parallel M-H approaches (cont'd)}
 \item Prefetching
-\item description (general, hand-waiving)
-\item benefits, caveats 
+\item description \emph{(just the general idea, hand-waving)}
 \item references
 \end{slide}
 
 \begin{slide}{The Method of Choice}
-\item Parallel prefetching is the method of choice: explain why? 
+\item Prefetching is the parallelization method of choice: explain why
 \end{slide}
 
 \begin{slide}{Prefetching}
@@ -121,23 +124,32 @@ Boyan Bejanov\\
 \end{slide}
 
 \begin{slide}{Analysis (cont'd)}
-\item P-completeness (1-2 slides max)
+\item P-completeness \emph{(1-2 slides max)}
 \end{slide} 
 
 \begin{slide}{Implementation details}
-\item General remarks (2-3 slides max)
+\item General remarks \emph{(2-3 slides max)}
 \end{slide}
 
 \begin{slide}{Implementation details}
-\item Multicore: Cilk
+\item Multicore take one: Cilk
 \end{slide}
 
 \begin{slide}{Implementation details}
-\item Multicore: OpenMP
+\item Multicore take two: OpenMP
 \end{slide}
 
 \begin{slide}{Implementation details}
 \item Coarse grained cluster: MPI
+\end{slide}
+
+\begin{slide}{Computational Experiments \emph{(4-5 slides)}}
+\item Tables of run times
+\item Speedup graphs
+\end{slide}
+
+\begin{slide}{Conclusion}
+\item Conclusion
 \end{slide}
 
 
