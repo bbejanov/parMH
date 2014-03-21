@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     double lp_vals[N];
 
     rngs_set_random_seed();
-    
+if(0) {
     print_matrix("var", var, dim, dim);  
     mvn_sqrt(&dim, var, sqrt_var);
     print_matrix("sqrt(var)", sqrt_var, dim, dim);  
@@ -80,18 +80,23 @@ int main(int argc, char **argv)
 
     mvn_logpdf(&n, rand_vals, lp_vals, &dim, mean, sqrt_var);
     print_matrix("lp values", lp_vals, n, 1);
-
+}
     n = 20000;
     dim = 2;
-    double *chain = (double*) malloc(n*dim*sizeof(double));
-    double start[2] = {0.0, 0.0};
+    double *chain = (double*) malloc(n*(dim+1)*sizeof(double));
+    double start[2] = { 4.0, -4.0};
     int *accepted = (int *) malloc(n*sizeof(int));
-    double prop_var[4] = { 1.0, 0.0, 0.0, 1.0 };
+    double prop_var[4] = { 0.2, 0.0, 0.0, 0.2 };
     
-    rwmh_chain(&n, &dim, start, target_example_1,  NULL, 
+    rwmh_chain(&n, &dim, start, target_example_2,  NULL, 
         prop_var, chain, accepted);
-        
-    print_chain("Chain", chain, accepted, n, dim);
+    target_example_2(&n, &dim, chain, chain+n*dim, NULL);
+    print_chain("Chain", chain, accepted, n, 1+dim);
+
+    rand_example_2(&izero, &n, chain, &dim, NULL);
+    target_example_2(&n, &dim, chain, chain+n*dim, NULL);
+    print_chain("Direct", chain, accepted, n, 1+dim);
+    
 
     free(chain);
     free(accepted);

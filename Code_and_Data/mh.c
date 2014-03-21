@@ -32,6 +32,10 @@ void rw_prop_rand(
     mvn_rand(which_gar, n, new, dim, current, sqrt_var);
 }
 
+/** The example_1 is a bivariate normal distribution with
+ *    mean = [ -7,  11 ]
+ *    covariance = [ 4 -1; -1 2 ]
+ **/
 void target_example_1(const int *n, const int *dim, 
     const double *points, double *lp, void *tdata)
 {    
@@ -43,6 +47,69 @@ void target_example_1(const int *n, const int *dim,
     mvn_sqrt(dim, var, sqv);
     mvn_logpdf(n, points, lp, dim, mean, sqv);
 }
+
+void rand_example_1(const int *wgar, int *n, double *points,
+    const int *dim, void *tdata)
+{    
+    double sqv[4];
+    const double mean[2] = {-7.0, 11.0};
+    const double var[4] = { 4.0, -1.0, 
+                           -1.0,  2.0 };
+    assert(dim[0]==2);
+    mvn_sqrt(dim, var, sqv);
+    mvn_rand(wgar, n, points, dim, mean, sqv);
+}
+
+
+/** The example_2 is a mixture of two bivariate normals with
+ * the following
+ * mu_0 = [ -3, 0 ]  cov_0 = [ 1 0; 0 1]  with prob = 0.8
+ * mu_1 = [  1, 4 ]  cov_1 = [ 4 0; 0 4]  with prob = 0.2
+ **/
+void target_example_2(const int *n, const int *dim, 
+    const double *points, double *lp, void *tdata)
+{
+    enum { my_nmix = 2, my_dim = 2 };
+    const int num_modes = my_nmix;
+    double sqvs[my_nmix*my_dim*my_dim];
+    const double weights[my_nmix] = { 0.8, 0.2 };
+    const double means[my_nmix*my_dim] =
+            {   -3.0, 0.0,  /** mu_0 */
+                1.0, 4.0 }; /** mu_1 */
+    const double covs[my_nmix*my_dim*my_dim] =
+            {   1.0, 0.0, 0.0, 1.0,   /** cov_0 */
+                4.0, 0.0, 0.0, 4.0};  /** cov_1 */
+    assert(dim[0]==my_dim);
+    for(int i=0; i<my_nmix; ++i) {
+        mvn_sqrt(dim, covs+i*my_dim*my_dim, sqvs+i*my_dim*my_dim);
+    }
+    mvnm_logpdf(n, points, lp, &num_modes, weights, dim, means, sqvs);
+
+}
+
+void rand_example_2(const int *wgar, int *n, double *points,
+    const int *dim, void *tdata)
+{    
+    enum { my_nmix = 2, my_dim = 2 };
+    const int num_modes = my_nmix;
+    double sqvs[my_nmix*my_dim*my_dim];
+    const double weights[my_nmix] = { 0.8, 0.2 };
+    const double means[my_nmix*my_dim] =
+            {   -3.0, 0.0,  /** mu_0 */
+                1.0, 4.0 }; /** mu_1 */
+    const double covs[my_nmix*my_dim*my_dim] =
+            {   1.0, 0.0, 0.0, 1.0,   /** cov_0 */
+                4.0, 0.0, 0.0, 4.0};  /** cov_1 */
+    assert(dim[0]==my_dim);
+    for(int i=0; i<my_nmix; ++i) {
+        mvn_sqrt(dim, covs+i*my_dim*my_dim, sqvs+i*my_dim*my_dim);
+    }
+    mvnm_rand(wgar, n, points, &num_modes, weights, dim, means, sqvs);
+
+}
+
+
+
 
 
 void rwmh_chain(const int *n, const int *dim, const double *start, 

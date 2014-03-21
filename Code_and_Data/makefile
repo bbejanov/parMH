@@ -41,7 +41,7 @@ main : main.c libgaussian.so
 
 .PHONY : clean
 clean : 
-	-rm -f *.o *.mod *.so
+	-rm -f *.o *.mod *.so main
 
 
 
