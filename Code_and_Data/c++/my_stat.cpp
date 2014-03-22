@@ -20,7 +20,7 @@ void how_many_streams(int *count)
 void urand(const int *which_gar, int *n, double *vals) 
 {
     MyRngStream G(*which_gar);
-    for(size_t i=0; i<n[0]; ++i) 
+    for(int i=0; i<n[0]; ++i) 
         vals[i] = G.uRand(); 
     return;
 } 
@@ -34,7 +34,7 @@ void catrand(const int *which_gar, int *n, int *vals, const int *k, const double
 void catrand1(const int *which_gar, int *n, int *vals, const int *k, const double *p)
 {
     Categorical C(k[0], p, which_gar[0]);
-    for(size_t i=0; i<n[0]; ++i)
+    for(int i=0; i<n[0]; ++i)
         vals[i] = 1+C.rand();
 }
 
@@ -131,6 +131,12 @@ void mvnm_logpdf(const int *n, const double *x, double *logpdf,
     MixtureMVN A(num_modes[0], weights, dim[0], means, covs);
     A.sample_logpdf(n[0], x, logpdf);
 }
+
+/**************************************************************************/
+/**************************************************************************/
+/**************************************************************************/
+/**************************************************************************/
+
 
 
 

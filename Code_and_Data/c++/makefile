@@ -29,7 +29,7 @@ LIBS += -lrngstreams
 %.so : 
 	$(CXX) $(CXXFLAGS) -shared $(LDFLAGS) -o $@ $^ $(LIBS)
 
-libstatdist.so : my_stat.o statdistros.o
+libstatdist.so : my_stat.o statdistros.o statmh.o mhexamples.o
 
 
 main : main.cpp libstatdist.so

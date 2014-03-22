@@ -42,7 +42,7 @@ void MyRngStream::ClearAllStreams()
  *     Categorical                                                      *
  ************************************************************************/
 
-Categorical::Categorical(size_t k, const double *p, size_t Idx)
+Categorical::Categorical(int k, const double *p, int Idx)
 : Distribution<int>(Idx) 
 {
     num_cat = k;
@@ -51,12 +51,12 @@ Categorical::Categorical(size_t k, const double *p, size_t Idx)
     memcpy(prob, p, k*sizeof(double));
     cum_prob[0] = prob[0];
     assert(prob[0] >= 0.0);
-    for(size_t i=1; i<k; ++i) {        
+    for(int i=1; i<k; ++i) {        
         assert(prob[i] >= 0.0);
         cum_prob[i] = cum_prob[i-1] + prob[i];
     }
     if (fabs(cum_prob[k-1]-1.0) > 1e-14) {
-        for(size_t i=0; i<k; ++i) {
+        for(int i=0; i<k; ++i) {
             prob[i] /= cum_prob[k-1];
             cum_prob[i] /= cum_prob[k-1];
         }
@@ -119,9 +119,9 @@ double Gaussian::logpdf(double pt) const
     return -0.5*(log(2.0*M_PI*var)+pt*pt/var);
 }
 
-void Gaussian::sample(size_t n, double pts[]) const
+void Gaussian::sample(int n, double pts[]) const
 {
-    size_t i = 0; /** start with i=0 */
+    int i = 0; /** start with i=0 */
     if( !isnan(saved) ) {
         pts[i] = saved;
         saved = NAN;
@@ -141,17 +141,17 @@ void Gaussian::sample(size_t n, double pts[]) const
     }
 }
 
-void Gaussian::sample_logpdf(size_t n, const double pts[], double vals[]) const
+void Gaussian::sample_logpdf(int n, const double pts[], double vals[]) const
 {
     if(stddev==0.0) { /* comaring floating numbers for equality !!! */
-        for(size_t i=0; i<n; ++i) {
+        for(int i=0; i<n; ++i) {
             double pt = pts[i]-mean;
             if(pt==0.0) vals[i]=INFINITY;
             else vals[i] = -INFINITY;
         }
     } else {
         double aux = log(2.0*M_PI*stddev*stddev);
-        for(size_t i=0; i<n; ++i) {
+        for(int i=0; i<n; ++i) {
             double stdpt = (pts[i]-mean) / stddev;
             #ifdef FP_FAST_FMA
             vals[i] = -0.5*fma(stdpt,stdpt,aux);
@@ -162,10 +162,10 @@ void Gaussian::sample_logpdf(size_t n, const double pts[], double vals[]) const
     }
 }
 
-void Gaussian::sample_pdf(size_t n, const double pts[], double vals[]) const
+void Gaussian::sample_pdf(int n, const double pts[], double vals[]) const
 {
     sample_logpdf(n, pts, vals);
-    for(size_t i=0; i<n; ++i)
+    for(int i=0; i<n; ++i)
         vals[i] = exp(vals[i]);
 }
 
@@ -186,13 +186,13 @@ void Gaussian::sample_pdf(size_t n, const double pts[], double vals[]) const
  * 
  **/
 
-MultivariateGaussian::MultivariateGaussian(size_t d, size_t Idx)
+MultivariateGaussian::MultivariateGaussian(int d, int Idx)
     : Gaussian(Idx), standard_mv(true),
         mean_vec(NULL), sqrt_cov_mat(NULL), dim(d)
 {}
 
-MultivariateGaussian::MultivariateGaussian(size_t d, const double *mu,
-                const double *sigma, size_t Idx)
+MultivariateGaussian::MultivariateGaussian(int d, const double *mu,
+                const double *sigma, int Idx)
     : Gaussian(Idx), standard_mv(false),
         mean_vec(NULL), sqrt_cov_mat(NULL), dim(d)
 {
@@ -245,13 +245,20 @@ throw (std::invalid_argument)
         memset(mat+i, 0, sizeof(double)*(dim-j));
 }
 
-void MultivariateGaussian::IdentityMatrix(double *mat) const
+void MultivariateGaussian::DiagonalMatrix(double *mat, double alpha) const
 {
     memset(mat, 0, dim*dim*sizeof(double));
-    for(size_t i=0; i<dim*dim; i+=dim+1) mat[i]=1.0;
+    for(int i=0; i<dim*dim; i+=dim+1) mat[i]=alpha;
 }
 
-void MultivariateGaussian::sample(size_t n, double pts[]) const
+void MultivariateGaussian::DiagonalMatrix(double *mat, const double *diag) const
+{
+    int i_1=1, i_dimp1=dim+1;
+    memset(mat, 0, dim*dim*sizeof(double));
+    dcopy(&dim, diag, &i_1, mat, &i_dimp1);
+}
+
+void MultivariateGaussian::sample(int n, double pts[]) const
 {
     stdnorm::sample(n*dim, pts);
     if(standard_mv) {
@@ -271,42 +278,42 @@ void MultivariateGaussian::sample(size_t n, double pts[]) const
     double one = 1.0;
     dtrmm("R", "U", "N", "N", &in, &dim, &one, sqrt_cov_mat, &dim, pts, &in);
     /** last, add the mean:   pts(i,:) = pts(i,:) + mean  for each row i */
-    for(size_t j=0; j<dim; ++j)
-        for(size_t i=0; i<n; ++i) 
+    for(int j=0; j<dim; ++j)
+        for(int i=0; i<n; ++i) 
             pts[i+j*n] += mean_vec[j];
 }
 
-void MultivariateGaussian::sample_logpdf(size_t n,
+void MultivariateGaussian::sample_logpdf(int n,
         const double pts[], double vals[]) const
 {
-    const int one_i=1, n_i=n;
+    const int i_one=1;
     const double one_d = 1.0, mone_d = -1.0;
     double a = -0.5*log(2.0*M_PI)*dim;
     if (!standard_mv) {
-        for(size_t i=0; i<dim*dim; i+=dim+1)
+        for(int i=0; i<dim*dim; i+=dim+1)
             a -= log(sqrt_cov_mat[i]);
     }
     /** compute logpdf(i)=a-0.5*(x(i,:)-mean)*inv(cov)*(x(i,:)-mean)' */
     double b = 0.0;
     if (!standard_mv) {
         double *tmp = new double[dim];
-        for(size_t i=0; i<n; ++i)  {
+        for(int i=0; i<n; ++i)  {
             /** tmp = pts(i,:) **/
-            dcopy(&dim, pts+i, &n_i, tmp, &one_i);
+            dcopy(&dim, pts+i, &n, tmp, &i_one);
             /** tmp =  -1.0*mean_vec+tmp **/
-            daxpy(&dim, &mone_d, mean_vec, &one_i, tmp, &one_i);
+            daxpy(&dim, &mone_d, mean_vec, &i_one, tmp, &i_one);
             /** solve Y*sqrt_var=tmp for Y
               * the answer goes back into tmp, so there is no Y **/
-            dtrsm("R", "U", "N", "N", &one_i, &dim, &one_d, sqrt_cov_mat, 
-                &dim, tmp, &one_i);
-            b = ddot(&dim, tmp, &one_i, tmp, &one_i);
+            dtrsm("R", "U", "N", "N", &i_one, &dim, &one_d, sqrt_cov_mat, 
+                &dim, tmp, &i_one);
+            b = ddot(&dim, tmp, &i_one, tmp, &i_one);
             vals[i] = a-0.5*b;
         }
         delete[] tmp;
     } else {
         /** no need to deal with mean and cov, so b = x(i,:)*x(i,:)' */
-        for(size_t i=0; i<n; ++i)  {
-            b = ddot(&dim, pts+i, &n_i, pts+i, &n_i);
+        for(int i=0; i<n; ++i)  {
+            b = ddot(&dim, pts+i, &n, pts+i, &n);
             vals[i] = a-0.5*b;
         }
     }
@@ -318,34 +325,34 @@ void MultivariateGaussian::sample_logpdf(size_t n,
  ************************************************************************/
 
 
-void MixtureMVN::sample(size_t n, double pts[]) const
+void MixtureMVN::sample(int n, double pts[]) const
 {
-    int i_one=1, i_n=n;
+    int i_one=1;
     double *tmp = new double[dim];
-    for(size_t i=0; i<n; ++i) {
+    for(int i=0; i<n; ++i) {
         int bin = C.rand();
         MVvec[bin].sample(1, tmp);
-        dcopy(&dim, tmp, &i_one, pts+i, &i_n);
+        dcopy(&dim, tmp, &i_one, pts+i, &n);
     }
     delete[] tmp;
 }
 
-void MixtureMVN::sample_logpdf(size_t n, const double pts[], double vals[]) const
+void MixtureMVN::sample_logpdf(int n, const double pts[], double vals[]) const
 {
     sample_pdf(n, pts, vals);
-    for(size_t i=0; i<n; ++i)
+    for(int i=0; i<n; ++i)
         vals[i] = log(vals[i]);
 }
 
-void MixtureMVN::sample_pdf(size_t n, const double pts[], double vals[]) const
+void MixtureMVN::sample_pdf(int n, const double pts[], double vals[]) const
 {
-    int i_n=n, i_one=1;    
+    int i_one=1;    
     double *tmp = new double[n];
     memset(vals, 0, n*sizeof(double));
-    for(size_t bin=0; bin<C.num_cat; ++bin) {
+    for(int bin=0; bin<C.num_cat; ++bin) {
         double pr = C.pdf(bin);
         MVvec[bin].sample_pdf(n, pts, tmp);
-        daxpy(&i_n, &pr, tmp, &i_one, vals, &i_one);
+        daxpy(&n, &pr, tmp, &i_one, vals, &i_one);
     }
     delete[] tmp;
 }

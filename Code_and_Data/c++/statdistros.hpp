@@ -41,7 +41,7 @@ protected:
     }    
 
 public:
-    explicit MyRngStream(size_t Idx = 0) {
+    explicit MyRngStream(int Idx = 0) {
         while (AllStreams.size() <= Idx) {
             /** extend AllStreams as necessary */
             AllStreams.push_back(newRngStream());
@@ -54,7 +54,7 @@ public:
     static void ClearAllStreams();  /** there is no need to ever call this */
  
     /** just for testing/debugging */
-    static size_t CountStreams() { return AllStreams.size(); }
+    static int CountStreams() { return AllStreams.size(); }
 
     /** user-defined conversion to RngStream */
     operator RngStream() { return *stream; }
@@ -73,7 +73,7 @@ class Distribution
 protected:
     mutable MyRngStream G;
 public:
-    explicit Distribution<Point>(size_t Idx=0) : G(Idx) {}
+    explicit Distribution<Point>(int Idx=0) : G(Idx) {}
     explicit Distribution<Point>(MyRngStream &g) : G(g) {}
 
     /** abstract methods -- one point at a time */
@@ -83,19 +83,19 @@ public:
 
     /** vector-equivalent -- work on entire sample of size n */
     /** please redefine these in your derived class */
-    virtual void sample(size_t n, Point pts[]) const
+    virtual void sample(int n, Point pts[]) const
     {
-        for(size_t i=0; i<n; ++i)
+        for(int i=0; i<n; ++i)
             pts[i] = rand();
     }
-    virtual void sample_pdf(size_t n, const Point pts[], double vals[]) const
+    virtual void sample_pdf(int n, const Point pts[], double vals[]) const
     {
-        for(size_t i=0; i<n; ++i)
+        for(int i=0; i<n; ++i)
             vals[i] = pdf(pts[i]);
     }
-    virtual void sample_logpdf(size_t n, const Point pts[], double vals[]) const
+    virtual void sample_logpdf(int n, const Point pts[], double vals[]) const
     {
-        for(size_t i=0; i<n; ++i)
+        for(int i=0; i<n; ++i)
             vals[i] = logpdf(pts[i]);
     }
 };
@@ -107,7 +107,7 @@ class Uniform : public Distribution<double>
 private:
     double left, width;
 public:
-    Uniform(double a=0.0, double b=0.0, size_t Idx=0)
+    Uniform(double a=0.0, double b=0.0, int Idx=0)
     : Distribution<double>(Idx), left(a), width(b-a) {}
     
     virtual double rand() const
@@ -125,11 +125,11 @@ public:
 class Categorical : public Distribution<int>
 {
 private:
-    size_t num_cat;   /** number of categories */
+    int num_cat;   /** number of categories */
     double *prob;     /** array of probabilities */
     double *cum_prob; /** array of cummulative probabilities */
 public:
-    Categorical(size_t k, const double *p, size_t Idx=0);
+    Categorical(int k, const double *p, int Idx=0);
     virtual ~Categorical() { delete[] prob; delete[] cum_prob; }
     virtual int rand() const;
     virtual double pdf(int pt) const
@@ -170,20 +170,20 @@ private:
     mutable double saved;
     void Box_Muller(double &u, double &v) const;
 public:
-    explicit Gaussian(size_t Idx=0)
+    explicit Gaussian(int Idx=0)
         : Distribution<double>(Idx), mean(0.0), stddev(1.0),
         standard(true), saved(NAN)
         {}
         
-    Gaussian(double m, double sd, size_t Idx=0)
+    Gaussian(double m, double sd, int Idx=0)
         : Distribution<double>(Idx), mean(m), stddev(sd), standard(false), saved(NAN)
         {assert(stddev>=0.0);}
     virtual double rand() const;
     virtual double pdf(double pt) const { return exp(logpdf(pt)); }
     virtual double logpdf(double pt) const;
-    virtual void sample(size_t n, double pts[]) const;
-    virtual void sample_logpdf(size_t n, const double pts[], double vals[]) const;
-    virtual void sample_pdf(size_t n, const double pts[], double vals[]) const;
+    virtual void sample(int n, double pts[]) const;
+    virtual void sample_logpdf(int n, const double pts[], double vals[]) const;
+    virtual void sample_pdf(int n, const double pts[], double vals[]) const;
 };
 
 /************************************************************************/
@@ -225,9 +225,9 @@ protected:
     }
 public:
     virtual ~MultivariateGaussian() { if (!standard_mv) delete_mean_cov(); }
-    explicit MultivariateGaussian(size_t d, size_t Idx=0);
-    MultivariateGaussian(size_t d, const double *mu,
-                    const double *sigma_half, size_t Idx=0);
+    explicit MultivariateGaussian(int d, int Idx=0);
+    MultivariateGaussian(int d, const double *mu,
+                    const double *sigma_half, int Idx=0);
 
     MultivariateGaussian(const MultivariateGaussian &MV)
         : Gaussian(MV), mean_vec(NULL), sqrt_cov_mat(NULL)
@@ -260,7 +260,9 @@ public:
     void SetCovariance(const double *cov);
     
     void SqrtMatrix(double *mat) const throw (std::invalid_argument);
-    void IdentityMatrix(double *mat) const;
+    void IdentityMatrix(double *mat) const { DiagonalMatrix(mat, 1.0); }
+    void DiagonalMatrix(double *mat, double alpha=1.0) const;
+    void DiagonalMatrix(double *mat, const double *diag) const;
 
     /** The pts[] array must be of length n*dim.  The points are stored
      *  as a n-by-dim matrix in column major order, i.e. the first n
@@ -268,8 +270,8 @@ public:
      *  The non-sample versions are disabled because we don't want to manage
      *  the caller's memory; use sample_xyz with n=1 instead
      */
-    virtual void sample(size_t n, double pts[]) const;
-    virtual void sample_logpdf(size_t n, const double pts[], double vals[]) const;
+    virtual void sample(int n, double pts[]) const;
+    virtual void sample_logpdf(int n, const double pts[], double vals[]) const;
 
     friend class MixtureMVN;
 };
@@ -295,32 +297,32 @@ protected:
     Categorical C;
     std::vector<MultivariateGaussian> MVvec;
 public:
-    MixtureMVN(size_t k, const double *p,
-            const std::vector<MultivariateGaussian> &MV, size_t Idx=0)
+    MixtureMVN(int k, const double *p,
+            const std::vector<MultivariateGaussian> &MV, int Idx=0)
         : Distribution<double>(Idx), C(k, p, Idx), MVvec(MV)
         {
             assert(MVvec.size() == k);
             dim = MVvec[0].dim;
-            for(size_t i=1; i<k; ++i)
+            for(int i=1; i<k; ++i)
                 assert(MVvec[i].dim == dim);
         }
 
-    MixtureMVN(size_t k, const double *p,
-            size_t d, const double *means, const double *covs,
-            size_t Idx=0)
+    MixtureMVN(int k, const double *p,
+            int d, const double *means, const double *covs,
+            int Idx=0)
         : Distribution<double>(Idx), C(k, p, Idx), dim(d)
         {
             MultivariateGaussian G(dim, Idx);
             MVvec.insert(MVvec.end(), k, G);
-            for(size_t i=0; i<k; ++i) {
+            for(int i=0; i<k; ++i) {
                 MVvec[i].SetCovariance(covs+i*dim*dim);
                 MVvec[i].SetMean(means+i*dim);
             }
         }
 
-    virtual void sample(size_t n, double pts[]) const;
-    virtual void sample_logpdf(size_t n, const double pts[], double vals[]) const;
-    virtual void sample_pdf(size_t n, const double pts[], double vals[]) const;
+    virtual void sample(int n, double pts[]) const;
+    virtual void sample_logpdf(int n, const double pts[], double vals[]) const;
+    virtual void sample_pdf(int n, const double pts[], double vals[]) const;
 };
 
 
