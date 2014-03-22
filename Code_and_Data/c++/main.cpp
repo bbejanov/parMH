@@ -50,7 +50,7 @@ void print_chain(const char *name, const double *mat,
     printf("\n");
 }
 
-enum { DIM = 3, N = 10 };
+enum { DIM = 3, N = 10, K = 2};
 const int izero=0;
 int main(int argc, char **argv)
 {
@@ -65,7 +65,7 @@ int main(int argc, char **argv)
     double lp_vals[N];
 
     set_random_seed_from_time();
-    
+if(0) {    
     print_matrix("var", var, dim, dim);  
     mvn_sqrt(&dim, var, sqrt_var);
     print_matrix("sqrt(var)", sqrt_var, dim, dim);  
@@ -76,7 +76,23 @@ int main(int argc, char **argv)
 
     mvn_logpdf(&n, rand_vals, lp_vals, &dim, mean, var);
     print_matrix("lp values", lp_vals, n, 1);
+}
 
+    n = 20000;
+    int k = K;
+    double prob[K] = {0.8, 0.2};
+    double means[K*DIM] = { -3.0, 0.0, 5.0, 1.0, 4.0, 5.0 };
+    double covs[K*DIM*DIM] = {
+        1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+        4.0, 0.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, 4.0
+    };    
+    double *pts = new double[n*dim+n];
+    double *pdf = pts + n*dim;
+    mvnm_rand(&izero, &n, pts, &k, prob, &dim, means, covs);
+    mvnm_pdf(&n, pts, pdf, &k, prob, &dim, means, covs);
+    print_matrix("mvnm values", pts, n, dim+1);
+
+    delete[] pts;
     
     return 0;
 }

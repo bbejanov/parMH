@@ -5,13 +5,17 @@ extern "C" {
 #include <RngStream.h>
 }
 
+/** the C standard library includes **/
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
 #include <cassert>
+
+/** the C++ standard library includes **/
 #include <vector>
-#include <array>
+//~ #include <array>
 #include <stdexcept>
+#include <iostream>
 
 
 /** this class handles independent random streams as per RngStream pachage */
@@ -133,7 +137,8 @@ public:
     virtual double logpdf(int pt) const
     { assert(pt<num_cat); return log(prob[pt]); }
 
-    Categorical(const Categorical &C) : Distribution<int>(C) {
+    Categorical(const Categorical &C)
+        : Distribution<int>(C) {
         num_cat = C.num_cat;
         prob = new double[num_cat];
         memcpy(prob, C.prob, num_cat*sizeof(double));
@@ -219,7 +224,7 @@ protected:
         delete[] sqrt_cov_mat;
     }
 public:
-    virtual ~MultivariateGaussian(){ if (!standard_mv) delete_mean_cov(); }
+    virtual ~MultivariateGaussian() { if (!standard_mv) delete_mean_cov(); }
     explicit MultivariateGaussian(size_t d, size_t Idx=0);
     MultivariateGaussian(size_t d, const double *mu,
                     const double *sigma_half, size_t Idx=0);
@@ -292,12 +297,25 @@ protected:
 public:
     MixtureMVN(size_t k, const double *p,
             const std::vector<MultivariateGaussian> &MV, size_t Idx=0)
-        : C(k, p, Idx), MVvec(MV)
+        : Distribution<double>(Idx), C(k, p, Idx), MVvec(MV)
         {
             assert(MVvec.size() == k);
             dim = MVvec[0].dim;
             for(size_t i=1; i<k; ++i)
                 assert(MVvec[i].dim == dim);
+        }
+
+    MixtureMVN(size_t k, const double *p,
+            size_t d, const double *means, const double *covs,
+            size_t Idx=0)
+        : Distribution<double>(Idx), C(k, p, Idx), dim(d)
+        {
+            MultivariateGaussian G(dim, Idx);
+            MVvec.insert(MVvec.end(), k, G);
+            for(size_t i=0; i<k; ++i) {
+                MVvec[i].SetCovariance(covs+i*dim*dim);
+                MVvec[i].SetMean(means+i*dim);
+            }
         }
 
     virtual void sample(size_t n, double pts[]) const;

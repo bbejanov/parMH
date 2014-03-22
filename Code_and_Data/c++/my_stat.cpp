@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <iostream>
+
 #include "my_stat.h"
 #include "statdistros.hpp"
 
@@ -27,8 +29,6 @@ void catrand(const int *which_gar, int *n, int *vals, const int *k, const double
 {
     Categorical C(k[0], p, which_gar[0]);
     C.sample(n[0], vals);
-    //~ for(size_t i=0; i<n[0]; ++i)
-        //~ vals[i] = C.rand();
 }
 
 void catrand1(const int *which_gar, int *n, int *vals, const int *k, const double *p)
@@ -105,5 +105,32 @@ void mvn_pdf(const int *n, const double *x, double *pdf,
     MultivariateGaussian MVG(dim[0], mu, sigma, 0);
     MVG.sample_pdf(n[0], x, pdf);
 }
+
+/****** Mixture of Multivariate Gaussian *********/
+
+void mvnm_rand(const int *which_gar, int *n, double *rvals,
+        const int *num_modes, const double *weights, 
+        const int *dim, const double *means, const double *covs)
+{
+    MixtureMVN A(num_modes[0], weights, dim[0], means, covs, which_gar[0]);
+    A.sample(n[0], rvals);
+}
+        
+void mvnm_pdf(const int *n, const double *x, double *pdf, 
+        const int *num_modes, const double *weights, 
+        const int *dim, const double *means, const double *covs)
+{
+    MixtureMVN A(num_modes[0], weights, dim[0], means, covs);
+    A.sample_pdf(n[0], x, pdf);
+}
+
+void mvnm_logpdf(const int *n, const double *x, double *logpdf, 
+        const int *num_modes, const double *weights, 
+        const int *dim, const double *means, const double *covs)
+{
+    MixtureMVN A(num_modes[0], weights, dim[0], means, covs);
+    A.sample_logpdf(n[0], x, logpdf);
+}
+
 
 

@@ -14,7 +14,7 @@ void urand(const int *gar, int *n, double *pts);
 void catrand(const int *gar, int *n, int *vals, const int *k, const double *p);
 void catrand1(const int *gar, int *n, int *vals, const int *k, const double *p);
 
-/** Gaussian normal distribution */
+/* Gaussian normal distribution */
 /** naming:
  *   xyz_rand(const int *w, const int *n, double *rvals, ...) 
  *         generates n random values using stream w and returns them in rvals
@@ -69,6 +69,18 @@ void mvn_logpdf(const int *n, const double *x, double *logpdf,
         const int *dim, const double *mu, const double *sigma);
 void mvn_pdf(const int *n, const double *x, double *pdf,
         const int *dim, const double *mu, const double *sigma);
+
+/* The multivariate normal mixture */
+
+void mvnm_rand(const int *which_gar, int *n, double *rvals,
+        const int *num_modes, const double *weights, 
+        const int *dim, const double *means, const double *covs);
+void mvnm_pdf(const int *n, const double *x, double *pdf, 
+        const int *num_modes, const double *weights, 
+        const int *dim, const double *means, const double *covs);
+void mvnm_logpdf(const int *n, const double *x, double *logpdf, 
+        const int *num_modes, const double *weights, 
+        const int *dim, const double *means, const double *covs);
 
 
 #ifdef __cplusplus

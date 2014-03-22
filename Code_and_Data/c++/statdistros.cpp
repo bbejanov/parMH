@@ -12,6 +12,8 @@
 #include <mkl_blas.h>
 
 
+std::vector<RngStream> MyRngStream::AllStreams; 
+
 void MyRngStream::RngS_set_random_seed()
 {
     unsigned long seed[6] = {0, 0, 0, 0, 0, 0};
@@ -28,8 +30,6 @@ void MyRngStream::RngS_set_random_seed()
     }
     RngStream_SetPackageSeed(seed);
 }
-
-std::vector<RngStream> MyRngStream::AllStreams; 
 
 void MyRngStream::ClearAllStreams()
 {
