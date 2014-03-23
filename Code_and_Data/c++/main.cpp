@@ -76,8 +76,7 @@ if(0) {
 
     mvn_logpdf(&n, rand_vals, lp_vals, &dim, mean, var);
     print_matrix("lp values", lp_vals, n, 1);
-}
-
+} else if (0) {
     n = 20000;
     int k = K;
     double prob[K] = {0.8, 0.2};
@@ -91,8 +90,18 @@ if(0) {
     mvnm_rand(&izero, &n, pts, &k, prob, &dim, means, covs);
     mvnm_pdf(&n, pts, pdf, &k, prob, &dim, means, covs);
     print_matrix("mvnm values", pts, n, dim+1);
-
     delete[] pts;
+} else {
+    n = 10000;
+    dim = 3;
+    double *chain = new double[n*dim];
+    int *accepted = new int[n];
+    double start[3] = { -8.0, -4.0, -6.0 }; 
+    rwmh_Example2(&n, start, chain, accepted);
+    print_chain("Example2", chain, accepted, n, dim);
+    delete [] chain;
+    delete [] accepted;
+}
     
     return 0;
 }

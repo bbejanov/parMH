@@ -11,11 +11,13 @@ struct TargetDistribution
     int dim;
     virtual double    pdf(int n, const double *pts, double *vals=NULL) =0;
     virtual double logpdf(int n, const double *pts, double *vals=NULL) =0;
+    explicit TargetDistribution(int d=0) : dim(d) {}
 };
 
 struct ProposalDistribution
 {
     int dim;
+    explicit ProposalDistribution(int d=0) : dim(d) {}
     virtual double urand() =0;
     // current is always a single point,
     // proposed will return n points in n-by-dim matrix
@@ -28,9 +30,10 @@ struct ProposalDistribution
 struct RandomWalkProposalDistribution
         : ProposalDistribution, MultivariateGaussian
 {
-    RandomWalkProposalDistribution(int d, int Idx=0) :
+    explicit RandomWalkProposalDistribution(int d, int Idx=0) :
+        ProposalDistribution(d), 
         MultivariateGaussian(d, Idx)
-        { ProposalDistribution::dim = d; }
+        { }
         
     double urand() { return G.uRand(); }
     void   sample(int n, const double *current,       double *proposed) {

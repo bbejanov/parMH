@@ -13,7 +13,6 @@ extern "C" {
 
 /** the C++ standard library includes **/
 #include <vector>
-//~ #include <array>
 #include <stdexcept>
 #include <iostream>
 
