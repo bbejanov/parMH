@@ -18,7 +18,7 @@ void MHChain::check_run_args(int n, const double *start, double *c, int *a)
     if( (PI->dim!=dim) || (Q->dim!=dim) ) {
         throw std::invalid_argument(
             "MHChain.run: dimensions of chain, target and proposal must agree");
-    }    
+    }
     if(have > 0) {
         delete[] chain;
         delete[] accepted;
@@ -35,19 +35,19 @@ void MHChain::check_run_args(int n, const double *start, double *c, int *a)
         throw std::invalid_argument(
             "MHChain.run: must give either both c and a or none of them");
     }
-}    
+}
 
 void RWMHChain::run(int n, const double *start, double *c, int *a)
 {
     check_run_args(n, start, c, a);
-    
+
     const int i_1 = 1;
     double current[dim], proposed[dim];
     dcopy(&dim, start, &i_1, current, &i_1);
 
     double lp_proposed = 0;
     double lp_current = PI->logpdf(1, current);
-    
+
     for(int i=0; i<n; ++i) {
         Q->sample(1, current, proposed);
         lp_proposed = PI->logpdf(1, proposed);
@@ -61,5 +61,22 @@ void RWMHChain::run(int n, const double *start, double *c, int *a)
         }
         dcopy(&dim, current, &i_1, chain+i, &n);
     }
+}
+
+void PrefetchRWMHChain::prefetch(double *current)
+{
+    if(pref_levels==0) return;
+}
+
+void PrefetchRWMHChain::run(int n, const double *start, double *c, int *a)
+{
+    check_run_args(n, start, c, a);
+
+    const int i_1 = 1;
+    double current[dim], proposed[dim];
+    dcopy(&dim, start, &i_1, current, &i_1);
+
+    double lp_proposed = 0;
+    double lp_current = PI->logpdf(1, current);
 }
 

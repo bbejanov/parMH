@@ -31,10 +31,10 @@ struct RandomWalkProposalDistribution
         : ProposalDistribution, MultivariateGaussian
 {
     explicit RandomWalkProposalDistribution(int d, int Idx=0) :
-        ProposalDistribution(d), 
+        ProposalDistribution(d),
         MultivariateGaussian(d, Idx)
         { }
-        
+
     double urand() { return G.uRand(); }
     void   sample(int n, const double *current,       double *proposed) {
         MultivariateGaussian::SetMean(current);
@@ -57,7 +57,7 @@ struct RandomWalkProposalDistribution
         return vals[0];
    }
 };
-    
+
 
 struct MHChain
 {
@@ -77,7 +77,7 @@ struct MHChain
     // the last two arguments allow user to give us memory
     virtual void run(int n, const double *start, double *c=NULL, int *a=NULL)
         =0;
-        
+
 protected:
     // if overloading, make sure to call the parent's
     virtual void check_run_args
@@ -87,6 +87,23 @@ protected:
 
 struct RWMHChain : public MHChain
 {
+    void run(int n, const double *start, double *c=NULL, int *a=NULL);
+};
+
+struct PrefetchRWMHChain : public RWMHChain
+{
+    int pref_levels;
+    double **points;
+    double  *logpi_vals;
+
+    void prefetch(double *current);
+
+    PrefetchRWMHChain() : pref_levels(0), points(0), logpi_vals(0) {}
+    ~PrefetchRWMHChain () {
+        if(points!=0) delete[] points;
+        if(logpi_vals!=0) delete[] logpi_vals;
+    }
+
     void run(int n, const double *start, double *c=NULL, int *a=NULL);
 };
 

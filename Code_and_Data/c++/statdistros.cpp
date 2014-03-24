@@ -1,10 +1,12 @@
 
 #include "statdistros.hpp"
+
 #include <cstdlib>
 #include <ctime>
 #include <cassert>
 #include <cmath>
 #include <cstring>
+
 #include <stdexcept>
 
 #include <mkl.h>
@@ -12,7 +14,7 @@
 #include <mkl_blas.h>
 
 
-std::vector<RngStream> MyRngStream::AllStreams; 
+std::vector<RngStream> MyRngStream::AllStreams;
 
 void MyRngStream::RngS_set_random_seed()
 {
@@ -33,8 +35,9 @@ void MyRngStream::RngS_set_random_seed()
 
 void MyRngStream::ClearAllStreams()
 {
-    for(auto s=std::begin(AllStreams); s!=std::end(AllStreams); ++s)
-        RngStream_DeleteStream(&(*s));
+//     for(std::vector<RngStream>::iterator s=AllStreams.begin(); s != AllStreams.end(); ++s)
+    for(auto s=AllStreams.begin(); s != AllStreams.end(); ++s)
+            RngStream_DeleteStream(&(*s));
     AllStreams.clear();
 }
 
@@ -43,7 +46,7 @@ void MyRngStream::ClearAllStreams()
  ************************************************************************/
 
 Categorical::Categorical(int k, const double *p, int Idx)
-: Distribution<int>(Idx) 
+: Distribution<int>(Idx)
 {
     num_cat = k;
     prob = new double[num_cat];
@@ -51,7 +54,7 @@ Categorical::Categorical(int k, const double *p, int Idx)
     memcpy(prob, p, k*sizeof(double));
     cum_prob[0] = prob[0];
     assert(prob[0] >= 0.0);
-    for(int i=1; i<k; ++i) {        
+    for(int i=1; i<k; ++i) {
         assert(prob[i] >= 0.0);
         cum_prob[i] = cum_prob[i-1] + prob[i];
     }
@@ -68,7 +71,7 @@ int Categorical::rand() const
     double U = G.uRand();
     int i;
     for(i=0; U > cum_prob[i]; ++i) {}
-    return i;        
+    return i;
 }
 
 /************************************************************************
@@ -104,7 +107,7 @@ double Gaussian::rand() const
         ret = saved;
         saved = NAN;
     }
-    if(standard) return ret; 
+    if(standard) return ret;
     else return mean + stddev * ret;
 }
 
@@ -127,7 +130,7 @@ void Gaussian::sample(int n, double pts[]) const
         saved = NAN;
         ++i;
     }
-    for(; i+1<n; i+=2) 
+    for(; i+1<n; i+=2)
         Box_Muller(pts[i], pts[i+1]);
     if(i<n) Box_Muller(pts[i], saved);
     if( !standard ) {
@@ -173,17 +176,17 @@ void Gaussian::sample_pdf(int n, const double pts[], double vals[]) const
  *     Multivariate Gaussian                                            *
  ************************************************************************/
 /** NOTES:
- *    - all matrices are stored column-major, i.e. the Fortran way 
+ *    - all matrices are stored column-major, i.e. the Fortran way
  *    - deviates are row-vectors, e.g. sample_rand() returns a
  *       matrix with n rows and dim columns, where each row is a random point
  *    - mean must be a vector of length dim
- *    - the correlation structure is given by the square-root of the variance 
+ *    - the correlation structure is given by the square-root of the variance
  *      matrix. This can be obtained by calling SqrtMatrix.
- *    - cov/sigma must be a dim-by-dim s.p.d. matrix, sqrt_cov_mat is the 
- *      upper-triangular Cholesky decomposition, s.t. 
+ *    - cov/sigma must be a dim-by-dim s.p.d. matrix, sqrt_cov_mat is the
+ *      upper-triangular Cholesky decomposition, s.t.
  *           transpose(sqrt_cov_mat) * sqrt_cov_mat = cov
  *    - we do not allocate/deallocate memory, user must manage their own RAM
- * 
+ *
  **/
 
 MultivariateGaussian::MultivariateGaussian(int d, int Idx)
@@ -234,14 +237,14 @@ void MultivariateGaussian::SetCovariance(const double *cov)
 void MultivariateGaussian::SqrtMatrix(double *mat) const
 throw (std::invalid_argument)
 {
-    int info;    
+    int info;
     dpotrf("U", &dim, mat, &dim, &info);
     if(info != 0) {
         std::invalid_argument e("Matrix is not positive-definite");
         throw e;
     }
     /** set below the main diagonal to zero */
-    for(int i=1, j=1; j<dim; i+=dim+1, ++j) 
+    for(int i=1, j=1; j<dim; i+=dim+1, ++j)
         memset(mat+i, 0, sizeof(double)*(dim-j));
 }
 
@@ -264,22 +267,22 @@ void MultivariateGaussian::sample(int n, double pts[]) const
     if(standard_mv) {
         return;  /** this was easy **/
     }
-    /** adjust the mean and the covariance.  
-     *  we need to do 
+    /** adjust the mean and the covariance.
+     *  we need to do
      *        pts = mean_vec + pts * sqrt_cov_mat
      *  pts is n-by-dim
-     *  mean_vec is 1-by-dim, so we need singleton expansion 
+     *  mean_vec is 1-by-dim, so we need singleton expansion
      *  sqrt_cov_mat is dim-by-dim
      **/
     /** call blas function to do TRiangular Matrix-Matrix multiplication
-     *        pts = pts * sqrt_cov_mat 
+     *        pts = pts * sqrt_cov_mat
      **/
     int in = n;  /** our blas uses 32-bit signed integers **/
     double one = 1.0;
     dtrmm("R", "U", "N", "N", &in, &dim, &one, sqrt_cov_mat, &dim, pts, &in);
     /** last, add the mean:   pts(i,:) = pts(i,:) + mean  for each row i */
     for(int j=0; j<dim; ++j)
-        for(int i=0; i<n; ++i) 
+        for(int i=0; i<n; ++i)
             pts[i+j*n] += mean_vec[j];
 }
 
@@ -304,7 +307,7 @@ void MultivariateGaussian::sample_logpdf(int n,
             daxpy(&dim, &mone_d, mean_vec, &i_one, tmp, &i_one);
             /** solve Y*sqrt_var=tmp for Y
               * the answer goes back into tmp, so there is no Y **/
-            dtrsm("R", "U", "N", "N", &i_one, &dim, &one_d, sqrt_cov_mat, 
+            dtrsm("R", "U", "N", "N", &i_one, &dim, &one_d, sqrt_cov_mat,
                 &dim, tmp, &i_one);
             b = ddot(&dim, tmp, &i_one, tmp, &i_one);
             vals[i] = a-0.5*b;
@@ -346,7 +349,7 @@ void MixtureMVN::sample_logpdf(int n, const double pts[], double vals[]) const
 
 void MixtureMVN::sample_pdf(int n, const double pts[], double vals[]) const
 {
-    int i_one=1;    
+    int i_one=1;
     double *tmp = new double[n];
     memset(vals, 0, n*sizeof(double));
     for(int bin=0; bin<C.num_cat; ++bin) {
