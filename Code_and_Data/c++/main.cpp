@@ -1,30 +1,11 @@
-/*
- * untitled.cxx
- * 
- * Copyright 2014 Unknown <bejb@gg-m.bbejanov.dlinkddns.com>
- * 
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
- * 
- * 
- */
+
 
 
 #include <cstdlib>
 #include <cstdio>
 #include "my_stat.h"
+#include "statmh.hpp"
+#include <iostream>
 
 void print_matrix(const char *name, const double *mat, int n, int m) {
     int i, j;
@@ -91,7 +72,7 @@ if(0) {
     mvnm_pdf(&n, pts, pdf, &k, prob, &dim, means, covs);
     print_matrix("mvnm values", pts, n, dim+1);
     delete[] pts;
-} else {
+} else if(0) {
     n = 10000;
     dim = 3;
     double *chain = new double[n*dim];
@@ -101,6 +82,30 @@ if(0) {
     print_chain("Example2", chain, accepted, n, dim);
     delete [] chain;
     delete [] accepted;
+} else {
+    
+    PrefetchRWMHChain P;
+    P.dim = 3;
+    double pt[3] = { 1.0, 0.0, -1.0} ;
+    P.h = 1;
+    P.malloc();
+    P.prefetch(pt);
+    P.free();
+    std::cout << std::endl;
+    P.h = 2;
+    P.malloc();
+    P.prefetch(pt);
+    P.free();
+    std::cout << std::endl;
+    P.h = 3;
+    P.malloc();
+    P.prefetch(pt);
+    P.free();
+    std::cout << std::endl;
+    P.h = 4;
+    P.malloc();
+    P.prefetch(pt);
+    std::cout << std::endl;
 }
     
     return 0;

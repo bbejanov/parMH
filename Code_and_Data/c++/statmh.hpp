@@ -59,8 +59,9 @@ struct RandomWalkProposalDistribution
 };
 
 
-struct MHChain
+class MHChain
 {
+public:
     int dim;
     int have;
     double *chain;
@@ -85,24 +86,45 @@ protected:
             throw(std::logic_error, std::invalid_argument) ;
 };
 
-struct RWMHChain : public MHChain
+class RWMHChain : public MHChain
 {
+public:
+    RWMHChain() : MHChain() {}
     void run(int n, const double *start, double *c=NULL, int *a=NULL);
 };
 
-struct PrefetchRWMHChain : public RWMHChain
+class PrefetchRWMHChain : public RWMHChain
 {
-    int pref_levels;
+public: 
+    void free() {
+        if(points!=0) {
+            delete[] points[0];
+            delete[] points;
+        }
+        if(logpi_vals!=0) 
+            delete[] logpi_vals;
+    }
+    
+    void malloc() {
+        if (h>0) {
+            int pow2n = 1 << h;
+            points = (double **) ::operator new (pow2n*sizeof(double*));
+            points[0] = new double[dim*pow2n];
+            for(int i=1; i<pow2n; ++i) 
+                points[i] = points[i-1]+dim;
+            logpi_vals = new double[pow2n];
+        }
+    }
+
+public:
+    int h;
     double **points;
     double  *logpi_vals;
 
-    void prefetch(double *current);
+    void prefetch(const double *current);
 
-    PrefetchRWMHChain() : pref_levels(0), points(0), logpi_vals(0) {}
-    ~PrefetchRWMHChain () {
-        if(points!=0) delete[] points;
-        if(logpi_vals!=0) delete[] logpi_vals;
-    }
+    PrefetchRWMHChain() : RWMHChain(), h(0), points(0), logpi_vals(0) {}
+    ~PrefetchRWMHChain () { free(); }
 
     void run(int n, const double *start, double *c=NULL, int *a=NULL);
 };

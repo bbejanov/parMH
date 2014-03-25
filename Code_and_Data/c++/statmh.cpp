@@ -63,20 +63,33 @@ void RWMHChain::run(int n, const double *start, double *c, int *a)
     }
 }
 
-void PrefetchRWMHChain::prefetch(double *current)
+void PrefetchRWMHChain::prefetch(const double *current)
 {
-    if(pref_levels==0) return;
+    int i_1 = 1;
+    if(h==0) return;
+    dcopy(&dim, current, &i_1, points[0], &i_1);
+    
+    for(int c=0; c<(1<<(h-1)); ++c) {
+        for(int s= c?int(log2(c))+1:0; s<h; ++s) {
+            int k = c + (1<<s);
+            //~ Q->sample(1, points[c], points[k]);
+            std::cout << "c = " << c << ", s = " << (1+s) << ", k = " << k << std::endl;
+        }
+    }
 }
 
 void PrefetchRWMHChain::run(int n, const double *start, double *c, int *a)
 {
+    
+    if (h == 0) {
+        RWMHChain::run(n,start,c,a);
+        return;
+    }           
+    
     check_run_args(n, start, c, a);
 
-    const int i_1 = 1;
-    double current[dim], proposed[dim];
-    dcopy(&dim, start, &i_1, current, &i_1);
-
-    double lp_proposed = 0;
-    double lp_current = PI->logpdf(1, current);
+    this->free();
+    this->malloc();
+    
 }
 
