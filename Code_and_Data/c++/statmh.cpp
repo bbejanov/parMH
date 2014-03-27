@@ -63,7 +63,7 @@ void RWMHChain::run(int n, const double *start, double *c, int *a)
     }
 }
 
-void PrefetchRWMHChain::prefetch(const double *current)
+void PrefetchRWMHChain::prefetch(const double *current, double logpi_c)
 {
     int i_1 = 1;
     if(h==0) return;
@@ -72,24 +72,54 @@ void PrefetchRWMHChain::prefetch(const double *current)
     for(int c=0; c<(1<<(h-1)); ++c) {
         for(int s= c?int(log2(c))+1:0; s<h; ++s) {
             int k = c + (1<<s);
-            //~ Q->sample(1, points[c], points[k]);
-            std::cout << "c = " << c << ", s = " << (1+s) << ", k = " << k << std::endl;
+            Q->sample(1, points[c], points[k]);
+            //~ std::cout << "c = " << c << ", s = "
+                    //~ << (1+s) << ", k = " << k << std::endl;
         }
     }
+    logpi_vals[0] = logpi_c;
+    for(int k=1; k<(1 << h); ++k)
+        logpi_vals[k] = PI->logpdf(1, points[k]);
 }
 
-void PrefetchRWMHChain::run(int n, const double *start, double *c, int *a)
+void PrefetchRWMHChain::run(int n, const double *start, double *ch, int *a)
 {
     
     if (h == 0) {
-        RWMHChain::run(n,start,c,a);
+        RWMHChain::run(n,start,ch,a);
         return;
     }           
     
-    check_run_args(n, start, c, a);
+    check_run_args(n, start, ch, a);
 
     this->free();
     this->malloc();
-    
+
+    double lpi_c = PI->logpdf(1, start);
+    int c; /* index of current point */
+    int p; /* index of proposed point */
+    int s; /* step within the current prefetching */
+
+    prefetch(start, lpi_c);
+    s = 0;
+    c = 0;
+    for(int i=0; i<n; ++i) {
+        if( s >= h ) {
+            prefetch(points[c], logpi_vals[c]);
+            c = 0;
+            s = 0;
+        }
+        s = s + 1;
+        p = c + (1 << (s-1));
+        double U = Q->urand();
+        if( log(U) < logpi_vals[p] - logpi_vals[c] ) {
+            accepted[i] = 1;
+            c = p;
+        } else {
+            accepted[i] = 0;
+        }
+        const int i_1 = 1;
+        dcopy(&dim, points[c], &i_1, chain+i, &n);
+    }
 }
 

@@ -121,7 +121,7 @@ public:
     double **points;
     double  *logpi_vals;
 
-    void prefetch(const double *current);
+    void prefetch(const double *current, double logpi_c);
 
     PrefetchRWMHChain() : RWMHChain(), h(0), points(0), logpi_vals(0) {}
     ~PrefetchRWMHChain () { free(); }

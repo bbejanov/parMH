@@ -55,6 +55,27 @@ void rwmh_Example1(int *n, const double *start, double *chain, int *accepted)
     rwmh_Example<Example1Target>(n, start, chain, accepted);
 }
 
+template <class ET> 
+void rwmh_prefetch_Example(int *n, int *h, const double *start,
+            double *chain, int *accepted)
+{
+    PrefetchRWMHChain RWMH;
+    RWMH.PI = new ET;
+    RWMH.dim = RWMH.PI->dim;
+    RWMH.Q = new RandomWalkProposalDistribution(RWMH.PI->dim);
+    RWMH.h = *h;
+    RWMH.run(*n, start, chain, accepted);
+    delete RWMH.PI;
+    delete RWMH.Q;
+}
+ 
+extern "C"
+void rwmh_prefetch_Example1(int *n, int *h, const double *start, double *chain, int *accepted)
+{
+    rwmh_prefetch_Example<Example1Target>(n, h, start, chain, accepted);
+}
+
+
 /***************************************************************************/
 
 struct Example2Target
@@ -108,6 +129,11 @@ void rwmh_Example2(int *n, const double *start, double *chain, int *accepted)
     rwmh_Example<Example2Target>(n, start, chain, accepted);
 }
 
+extern "C"
+void rwmh_prefetch_Example2(int *n, int *h, const double *start, double *chain, int *accepted)
+{
+    rwmh_prefetch_Example<Example2Target>(n, h, start, chain, accepted);
+}
 
 
 

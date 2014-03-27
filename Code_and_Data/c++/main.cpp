@@ -72,13 +72,15 @@ if(0) {
     mvnm_pdf(&n, pts, pdf, &k, prob, &dim, means, covs);
     print_matrix("mvnm values", pts, n, dim+1);
     delete[] pts;
-} else if(0) {
+} else if(1) {
+    int h = 3;
     n = 10000;
     dim = 3;
     double *chain = new double[n*dim];
     int *accepted = new int[n];
     double start[3] = { -8.0, -4.0, -6.0 }; 
-    rwmh_Example2(&n, start, chain, accepted);
+    //~ rwmh_Example2(&n, start, chain, accepted);
+    rwmh_prefetch_Example2(&n, &h, start, chain, accepted);
     print_chain("Example2", chain, accepted, n, dim);
     delete [] chain;
     delete [] accepted;
@@ -89,22 +91,22 @@ if(0) {
     double pt[3] = { 1.0, 0.0, -1.0} ;
     P.h = 1;
     P.malloc();
-    P.prefetch(pt);
+    P.prefetch(pt, 0.0);
     P.free();
     std::cout << std::endl;
     P.h = 2;
     P.malloc();
-    P.prefetch(pt);
+    P.prefetch(pt, 0.0);
     P.free();
     std::cout << std::endl;
     P.h = 3;
     P.malloc();
-    P.prefetch(pt);
+    P.prefetch(pt, 0.0);
     P.free();
     std::cout << std::endl;
     P.h = 4;
     P.malloc();
-    P.prefetch(pt);
+    P.prefetch(pt, 0.0);
     std::cout << std::endl;
 }
     
