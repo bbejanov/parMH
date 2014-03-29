@@ -29,7 +29,7 @@ class MyRngStream
      */
 protected:    
     static std::vector<RngStream> AllStreams;
-    RngStream *stream;  /** points to one of the elements of AllStreams */
+    RngStream stream;  /** points to one of the elements of AllStreams */
     
     static RngStream newRngStream()
     {
@@ -45,7 +45,7 @@ public:
             /** extend AllStreams as necessary */
             AllStreams.push_back(newRngStream());
         }
-        stream = &AllStreams[Idx];
+        stream = AllStreams[Idx];
     }
 
     static void RngS_set_random_seed();
@@ -56,10 +56,10 @@ public:
     static int CountStreams() { return AllStreams.size(); }
 
     /** user-defined conversion to RngStream */
-    operator RngStream() { return *stream; }
+    operator RngStream() { return stream; }
 
     /** uniform distribution on [0,1] */
-    double uRand() { return RngStream_RandU01(*stream); }
+    double uRand() { return RngStream_RandU01(stream); }
 
 };
 
@@ -255,6 +255,7 @@ public:
     }
 
     void SetStandardMeanCovariance();
+    void SetStandardMeanScaleCovariance(double scale);
     void SetMean(const double *mu);
     void SetCovariance(const double *cov);
     

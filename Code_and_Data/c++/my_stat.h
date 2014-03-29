@@ -85,12 +85,19 @@ void mvnm_logpdf(const int *n, const double *x, double *logpdf,
 
 /** lets run some rwmh examples **/
 
-void rwmh_Example1(int *n, const double *start, double *chain, int *accepted);
-void rwmh_Example2(int *n, const double *start, double *chain, int *accepted);
+void rwmh_Example1(int *n, const double *start,
+                double *chain, double *logpi, int *accepted);
+void rwmh_Example2(int *n, const double *start,
+                double *chain, double *logpi, int *accepted);
+void rwmh_Example3(int *n, const double *start,
+                double *chain, double *logpi, int *accepted);
 
-void rwmh_prefetch_Example1(int *n, int *h, const double *start, double *chain, int *accepted);
-void rwmh_prefetch_Example2(int *n, int *h, const double *start, double *chain, int *accepted);
-
+void rwmh_prefetch_Example1(int *n, const double *start,
+                double *chain, double *logpi, int *accepted);
+void rwmh_prefetch_Example2(int *n, const double *start,
+                double *chain, double *logpi, int *accepted);
+void rwmh_prefetch_Example3(int *n, const double *start,
+                double *chain, double *logpi, int *accepted);
 
 #ifdef __cplusplus
 }

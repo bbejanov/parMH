@@ -13,7 +13,10 @@ ifeq ( , $(wildcard $(RNGROOT)/lib/librng* ))
     $(error Where is RngStreams?)
 endif
 
-my_flags = -g -O0 -xhost -fp-model precise -I$(RNGROOT)/include -fPIC -mkl=sequential
+my_flags = -Wall -pedantic -g -O0
+my_flags += -xhost -fp-model precise -I$(RNGROOT)/include -fPIC -mkl=sequential
+my_flags += -openmp
+
 #my_flags = -O3 -xhost -fp-model precise -fPIC -I$(MKLROOT)/include \
 #           -I/cluster/prod/include
 CFLAGS += -std=gnu99 $(my_flags)
@@ -33,6 +36,13 @@ LDFLAGS += -mkl=sequential
 #                             $(MKLROOT)/lib/intel64/libmkl_sequential.a \
 #                             -Wl,--end-group -lpthread -lm
 LIBS += -lrngstreams
+
+%.o : %.c %.h
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
+
+%.o : %.cpp %.hpp
+	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
+
 
 %.so :
 	$(CXX) $(CXXFLAGS) -shared $(LDFLAGS) -o $@ $^ $(LIBS)

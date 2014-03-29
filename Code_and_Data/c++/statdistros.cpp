@@ -1,6 +1,4 @@
 
-#include "statdistros.hpp"
-
 #include <cstdlib>
 #include <ctime>
 #include <cassert>
@@ -12,6 +10,8 @@
 #include <mkl.h>
 #include <mkl_lapack.h>
 #include <mkl_blas.h>
+
+#include "statdistros.hpp"
 
 
 std::vector<RngStream> MyRngStream::AllStreams;
@@ -159,7 +159,7 @@ void Gaussian::sample_logpdf(int n, const double pts[], double vals[]) const
             #ifdef FP_FAST_FMA
             vals[i] = -0.5*fma(stdpt,stdpt,aux);
             #else
-            vals[i] = -0.5 * (stdpt*stdpt + aux);
+            vals[i] = -0.5*(stdpt*stdpt + aux);
             #endif
         }
     }
@@ -212,6 +212,16 @@ void MultivariateGaussian::SetStandardMeanCovariance()
     }
 }
 
+void MultivariateGaussian::SetStandardMeanScaleCovariance(double scale)
+{
+    if (standard_mv) {
+        standard_mv = false;
+        new_mean_cov();
+        memset(mean_vec, 0, dim*sizeof(double));
+    }
+    assert(scale > 0.0);
+    DiagonalMatrix(sqrt_cov_mat, sqrt(scale));
+}
 
 void MultivariateGaussian::SetMean(const double *mu)
 {

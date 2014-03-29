@@ -9,8 +9,8 @@
 struct TargetDistribution
 {
     int dim;
-    virtual double    pdf(int n, const double *pts, double *vals=NULL) =0;
-    virtual double logpdf(int n, const double *pts, double *vals=NULL) =0;
+    virtual double    pdf(int n, const double *pts, double *vals=NULL, int pftag=1) const =0;
+    virtual double logpdf(int n, const double *pts, double *vals=NULL, int pftag=1) const =0;
     explicit TargetDistribution(int d=0) : dim(d) {}
 };
 
@@ -33,7 +33,7 @@ struct RandomWalkProposalDistribution
     explicit RandomWalkProposalDistribution(int d, int Idx=0) :
         ProposalDistribution(d),
         MultivariateGaussian(d, Idx)
-        { }
+        { SetStandardMeanScaleCovariance(pow(0.1,2.0/d)); }
 
     double urand() { return G.uRand(); }
     void   sample(int n, const double *current,       double *proposed) {
@@ -65,24 +65,27 @@ public:
     int dim;
     int have;
     double *chain;
+    double *logpi;
     int *accepted;
-    TargetDistribution    *PI;
+    const TargetDistribution    *PI;
     ProposalDistribution  *Q;
 
     MHChain()
-        : dim(1), have(0), chain(0), accepted(0), PI(0), Q(0) {};
+        : dim(1), have(0), chain(0), logpi(0), accepted(0), PI(0), Q(0) {};
     // run may allocate memory, so we must clean it
     ~MHChain()
-        { if (have>0) { delete[]chain; delete[] accepted; } }
+        { if (have>0) { delete[]chain; delete[] logpi; delete[] accepted; } }
 
     // the last two arguments allow user to give us memory
-    virtual void run(int n, const double *start, double *c=NULL, int *a=NULL)
-        =0;
+    virtual void run(int n, const double *start,
+                    double *c=NULL, double *l=NULL, int *a=NULL
+        )=0;
 
 protected:
     // if overloading, make sure to call the parent's
     virtual void check_run_args
-            (int n, const double *start, double *c=NULL, int *a=NULL)
+            (int n, const double *start,
+                double *c=NULL, double *l=NULL, int *a=NULL)
             throw(std::logic_error, std::invalid_argument) ;
 };
 
@@ -90,43 +93,45 @@ class RWMHChain : public MHChain
 {
 public:
     RWMHChain() : MHChain() {}
-    void run(int n, const double *start, double *c=NULL, int *a=NULL);
+    virtual void run(int n, const double *start,
+                double *c=NULL, double *l=NULL, int *a=NULL);
 };
 
 class PrefetchRWMHChain : public RWMHChain
 {
-public: 
-    void free() {
-        if(points!=0) {
-            delete[] points[0];
-            delete[] points;
-        }
-        if(logpi_vals!=0) 
-            delete[] logpi_vals;
-    }
-    
-    void malloc() {
-        if (h>0) {
-            int pow2n = 1 << h;
-            points = (double **) ::operator new (pow2n*sizeof(double*));
-            points[0] = new double[dim*pow2n];
-            for(int i=1; i<pow2n; ++i) 
-                points[i] = points[i-1]+dim;
-            logpi_vals = new double[pow2n];
-        }
-    }
+private: 
+    void free_points();
+    void alloc_points();
 
 public:
-    int h;
-    double **points;
-    double  *logpi_vals;
+    static int h;
+    double **pref_points;
+    double  *pref_logpi;
+    int *pref_at_step;
 
-    void prefetch(const double *current, double logpi_c);
+    virtual void prefetch(const double *current, double logpi_current);
 
-    PrefetchRWMHChain() : RWMHChain(), h(0), points(0), logpi_vals(0) {}
-    ~PrefetchRWMHChain () { free(); }
+    PrefetchRWMHChain() : RWMHChain(), pref_points(0), pref_logpi(0), pref_at_step(0) {}
+    virtual ~PrefetchRWMHChain () {
+            free_points();
+            if(pref_at_step!=0) delete[] pref_at_step;
+    }
 
-    void run(int n, const double *start, double *c=NULL, int *a=NULL);
+    virtual void run(int n, const double *start,
+            double *c=NULL, double *l=NULL, int *a=NULL);
 };
+
+class PrefetchRWMHChainOMP : public PrefetchRWMHChain
+{
+    virtual void prefetch(const double *current, double logpi_current);
+};
+
+class PrefetchRWMHChainCilk : public PrefetchRWMHChain
+{
+    void prefetch_logpi_cilk(int c, int s);
+    virtual void prefetch(const double *current, double logpi_current);
+};
+    
+
 
 #endif
