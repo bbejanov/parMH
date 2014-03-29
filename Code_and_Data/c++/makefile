@@ -14,8 +14,10 @@ ifeq ( , $(wildcard $(RNGROOT)/lib/librng* ))
 endif
 
 my_flags = -Wall -pedantic -g -O0
-my_flags += -xhost -fp-model precise -I$(RNGROOT)/include -fPIC -mkl=sequential
+my_flags += -xhost -fp-model precise -fPIC -mkl=sequential
 my_flags += -openmp
+
+my_flags += -I$(RNGROOT)/include
 
 #my_flags = -O3 -xhost -fp-model precise -fPIC -I$(MKLROOT)/include \
 #           -I/cluster/prod/include
@@ -37,11 +39,15 @@ LDFLAGS += -mkl=sequential
 #                             -Wl,--end-group -lpthread -lm
 LIBS += -lrngstreams
 
-%.o : %.c %.h
-	$(COMPILE.c) $(OUTPUT_OPTION) $<
+all : main 
 
-%.o : %.cpp %.hpp
-	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
+include makefile.dep
+
+#%.o : %.c %.h
+#	$(COMPILE.c) $(OUTPUT_OPTION) $<
+
+#%.o : %.cpp %.hpp
+#	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
 
 
 %.so :
@@ -53,9 +59,12 @@ libstatdist.so : my_stat.o statdistros.o statmh.o mhexamples.o
 main : main.cpp libstatdist.so
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $< $(LIBS) -L. -Wl,-rpath,. -lstatdist
 
-.PHONY : clean
+.PHONY : clean deps
 clean :
 	-rm -f *.o *.mod *.so main
+
+deps : 
+	$(COMPILE.cpp) -MM *.cpp >> makefile.dep
 
 
 

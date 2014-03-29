@@ -36,26 +36,9 @@ struct RandomWalkProposalDistribution
         { SetStandardMeanScaleCovariance(pow(0.1,2.0/d)); }
 
     double urand() { return G.uRand(); }
-    void   sample(int n, const double *current,       double *proposed) {
-        MultivariateGaussian::SetMean(current);
-        MultivariateGaussian::sample(n, proposed);
-    }
-    double    pdf(int n, const double *current, const double *proposed, double *vals=NULL) {
-        assert((n==1) || (vals!=0));
-        double ret;
-        if(vals==0) vals = &ret;
-        MultivariateGaussian::SetMean(current);
-        MultivariateGaussian::sample_pdf(n, proposed, vals);
-        return vals[0];
-    }
-    double logpdf(int n, const double *current, const double *proposed, double *vals=NULL) {
-        assert((n==1) || (vals!=0));
-        double ret;
-        if(vals==0) vals = &ret;
-        MultivariateGaussian::SetMean(current);
-        MultivariateGaussian::sample_logpdf(n, proposed, vals);
-        return vals[0];
-   }
+    void   sample(int n, const double *current,       double *proposed);
+    double    pdf(int n, const double *current, const double *proposed, double *vals=NULL);
+    double logpdf(int n, const double *current, const double *proposed, double *vals=NULL);
 };
 
 
@@ -99,37 +82,58 @@ public:
 
 class PrefetchRWMHChain : public RWMHChain
 {
+public:
+    PrefetchRWMHChain();
+    virtual ~PrefetchRWMHChain ();
+    virtual void run(int n, const double *start,
+            double *c=NULL, double *l=NULL, int *a=NULL);
+            
+    /********** prefetching stuff ***************/
+    virtual void prefetch(const double *current, double logpi_current);
+    void prefetch_set_alpha_const(double alpha);
+    void prefetch_set_alpha_vector(const double *alpha);
+
+    enum {
+        FULL,       // build the full tree
+        STATIC,     // acceptance probability is constant (set by user)
+        DYNAMIC     // the realized unform values are taken into
+                    // account, probabilities are estimated dynamically
+    } pref_type;
+
+    int      pref_h;            // maximum dept of tree
+    int      pref_evals;        // maximum number of points to prefetch
+    int     *pref_selected;
+    double **pref_points;    
+    double  *pref_logpi;
+    double  *pref_prob;   /** probability of reaching node */
+    double  *pref_alpha;  /** the acceptance probability */
+
+    /** these variables are not needed for the algorithm, but for monitoring */
+    int     *pref_at_step;      // how many steps did we actually make
+    
+protected:
+    void prefetch_build_tree(const double *root);
+    void prefetch_compute_target(double root_target);
+    void prefetch_compute_probabilities();
+    void prefetch_select_poitns();
 private: 
     void free_points();
     void alloc_points();
-
-public:
-    static int h;
-    double **pref_points;
-    double  *pref_logpi;
-    int *pref_at_step;
-
-    virtual void prefetch(const double *current, double logpi_current);
-
-    PrefetchRWMHChain() : RWMHChain(), pref_points(0), pref_logpi(0), pref_at_step(0) {}
-    virtual ~PrefetchRWMHChain () {
-            free_points();
-            if(pref_at_step!=0) delete[] pref_at_step;
-    }
-
-    virtual void run(int n, const double *start,
-            double *c=NULL, double *l=NULL, int *a=NULL);
+    int prefetch_find_best_point(int c);
 };
 
 class PrefetchRWMHChainOMP : public PrefetchRWMHChain
 {
     virtual void prefetch(const double *current, double logpi_current);
+private:
+    void prefetch_compute_target_omp(double logpi_root);
 };
 
 class PrefetchRWMHChainCilk : public PrefetchRWMHChain
 {
-    void prefetch_logpi_cilk(int c, int s);
     virtual void prefetch(const double *current, double logpi_current);
+private:
+    void prefetch_compute_target_cilk(int c, int s);
 };
     
 
