@@ -122,7 +122,7 @@ int main(int argc, char **argv)
     if(par>0) {
         PrefetchRWMHChain *P = dynamic_cast<PrefetchRWMHChain*>(MyMH);
         P->pref_type = PrefetchRWMHChain::STATIC;
-        P->prefetch_set_alpha_const(0.2);
+        P->prefetch_set_alpha_const(0.234);
         P->pref_evals = pref_evals;
     }
     
@@ -160,7 +160,7 @@ int main(int argc, char **argv)
                     if( s < min_s ) min_s = s;
                 }
             }
-            std::clog << "# successful prefetching steps: " << std::endl
+            std::clog << "successful prefetching steps: " // << std::endl
                 << "\tmin=" << min_s << "\tavg=" << sum_s / count_s
                 << "\tmax=" << max_s << std::endl;
         }

@@ -229,14 +229,14 @@ void PrefetchRWMHChain::prefetch_select_poitns()
     for(int i=1; i<npts; ++i) {
         pref_points[i] = NULL;
     }
-    double exp_depth = 0.0;
-    pref_prob[0] = 0.0;
+    pref_prob[0] = 0.0;  /** sentinel */
     for(int i=0; i<pref_evals; ++i) {
         int k = prefetch_find_best_point(1);        
         pref_points[k] = pref_points[0] + k*dim;
         pref_selected[i] = k;
         assert(k>0 && k<npts);
-    }    
+    }
+    prefetch_print_tree();
 }
 
 void PrefetchRWMHChain::prefetch_set_alpha_const(double alpha)
@@ -268,6 +268,7 @@ void PrefetchRWMHChain::prefetch_build_tree(const double *root)
     
     if( pref_type == DYNAMIC ) {
         prefetch_compute_probabilities();
+        prefetch_select_poitns();
     }
     for(int c=0; c<(1<<(pref_h-1)); ++c) {
         if(pref_points[c]!=0) {
@@ -290,6 +291,23 @@ void PrefetchRWMHChain::prefetch_compute_target(double root_target)
     }
 }
 
+void PrefetchRWMHChain::prefetch_print_tree()
+{
+    int depth;
+    double D = 0.0;
+    std::clog << "prefetching tree:\t";
+    for(int k=1; k<(1<<pref_h); ++k) {
+        if(pref_points[k]==0) {
+            std::clog << ". ";        
+        } else {    
+            depth = 1 + log2(k);
+            D = D + pref_prob[k];
+            std::clog << k << " ";
+        }
+    }
+    std::clog << "\n\tdepth = " << depth
+            << "\texpected steps = " << D << std::endl;
+}
 
 /**************************************************************************/
 

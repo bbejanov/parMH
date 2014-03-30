@@ -116,6 +116,7 @@ protected:
     void prefetch_compute_target(double root_target);
     void prefetch_compute_probabilities();
     void prefetch_select_poitns();
+    void prefetch_print_tree();
 private: 
     void free_points();
     void alloc_points();
