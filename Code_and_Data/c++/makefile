@@ -41,6 +41,11 @@ LIBS += -lrngstreams
 
 all : main 
 
+deps : makefile.dep
+
+makefile.dep : 
+	$(COMPILE.cpp) -MM *.cpp >> makefile.dep
+
 include makefile.dep
 
 #%.o : %.c %.h
@@ -62,9 +67,6 @@ main : main.cpp libstatdist.so
 .PHONY : clean deps
 clean :
 	-rm -f *.o *.mod *.so main
-
-deps : 
-	$(COMPILE.cpp) -MM *.cpp >> makefile.dep
 
 
 

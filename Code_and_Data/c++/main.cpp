@@ -58,7 +58,8 @@ void print_chain(const char *name,
 
 int main(int argc, char **argv)
 {
-    //~ set_random_seed_from_time();
+    // set_random_seed_from_time();
+    MyRngStream::RngS_set_random_seed();
         
     /** Put a small default for number of points */
     int n = argc>1 ? atol(argv[1]) : 1000; 
@@ -135,10 +136,11 @@ int main(int argc, char **argv)
         << "time = " << full_time << "sec." << std::endl
         << "avg time per step = " << full_time / n << "sec." << std::endl;
         
+/*
     print_chain("Full Prefetching", MyMH->chain, MyMH->logpi,
         par==0 ? NULL : dynamic_cast<PrefetchRWMHChain*>(MyMH)->pref_at_step,
         MyMH->accepted, n, dim);
-
+*/
     {
         double averageAccRate = 0.0;
         for(int i=0; i<n; ++i)
