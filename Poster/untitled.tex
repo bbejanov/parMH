@@ -1,0 +1,724 @@
+% you can chose your theme here:
+%  \usetheme{Aachen}
+%  \usetheme{I6pd}
+%      \usetheme{Berlin}
+%  \usetheme{I6pd2}
+%  \usetheme{I6td}
+%  \usetheme{Oldi6}
+
+
+\documentclass[final]{beamer}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{times}
+\usepackage{amsmath,amssymb}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage[orientation=landscape,size=a0,scale=1.4,debug]{beamerposter}
+\usepackage{booktabs}
+
+\setcounter{MaxMatrixCols}{10}
+%TCIDATA{OutputFilter=LATEX.DLL}
+%TCIDATA{Version=5.00.0.2570}
+%TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
+%TCIDATA{LastRevised=Friday, March 13, 2009 10:14:14}
+%TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
+%TCIDATA{Language=American English}
+
+\usetheme{Berlin}
+
+%~ \mode<presentation>
+  %~ {
+  %~ \usetheme{I6dv}
+%~ }
+%~ \graphicspath{{figures/}}
+\institute[University of Copenhagen / Danmarks Nationalbank]{University of Copenhagen / Danmarks Nationalbank}
+%~ \input{tcilatex}
+\subtitle{Presentation at the HU-KU Conference 2009}
+
+\begin{document}
+
+\title[Extracting Market Expectations on Macroeconomic Announcements from
+Bond Prices]{Extracting Market Expectations on Macroeconomic Announcements
+from Bond Prices}
+\author[Lars Jul Overby]{Lars Jul Overby}
+\date[20 March 2009]{20 March 2009}
+
+\begin{frame}
+%TCIMACRO{\TeXButton{\begin{columns}[t]}{\begin{columns}[t]}}%
+%BeginExpansion
+\begin{columns}[t]%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{\begin{column}{.40\linewidth}}{\begin{column}{.43 \linewidth}}}%
+%BeginExpansion
+\begin{column}{.43 \linewidth}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\vspace{2cm}}{\vspace{2cm}}}%
+%BeginExpansion
+\vspace{2cm}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{Does Pre-Announcement Prices Contain Information?}{\begin{block}{Do Pre-Announcement Prices Contain Information?}
+%
+%\begin{itemize}
+%
+%\item Expectations of macroeconomic releases found via surveys may be biased
+%
+%\item If prices prior to release contain information about upcoming releases, this may be used to improve survey measures
+%
+%\item Firstly, the paper provides a theoretical underpinning of the link between survey measures and
+%orderflow information
+%
+%\item Secondly, it tests the information content of orderflow on bond markets about upcoming
+%macroeconomic releases
+%
+%\item Finally, it incorporates orderflow information into measures of expectations
+%
+%\end{itemize}
+%\end{block}}}%
+%BeginExpansion
+\begin{block}{Do Pre-Announcement Prices Contain Information?}
+
+\begin{itemize}
+
+\item Expectations of macroeconomic releases found via surveys may be biased
+
+\item If prices prior to release contain information about upcoming releases, this may be used to improve survey measures
+
+\item Firstly, the paper provides a theoretical underpinning of the link between survey measures and
+orderflow information
+
+\item Secondly, it tests the information content of orderflow on bond markets about upcoming
+macroeconomic releases
+
+\item Finally, it incorporates orderflow information into measures of expectations
+
+\end{itemize}
+\end{block}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\vspace{.4cm}}{\vspace{.4 cm}}}%
+%BeginExpansion
+\vspace{.4 cm}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{Theoretical Underpinning of Link Between Information and Prices}{\begin{block}{Theoretical Underpinning of Link Between Information and Prices}
+%
+%\begin{itemize}
+%
+%\item Informed trading will be reflected in prices
+%
+%\item The model is a Hellwig (1980) type model from Vives (2008)
+%
+%\item Capture price action around the release of macroeconomic announcements.
+%
+%\item We model the release of a macroeconomic statistic, $\zeta$, as stochastic variable in 2-period model (see paper for full model)
+%
+%\item Price dynamics after release
+%\[
+%p_{t}=\alpha \left( \zeta -\bar{v}\right) -\frac{\alpha \beta }{b}\left(ap_{t-1}-u\right)
+%\]
+%
+%\item Two factors determine the pricing dynamics:
+%\begin{itemize}
+%
+%\item The surprise content of the macroeconomic release, i.e. $\left( \zeta -\bar{v}\right)$, where $\bar{v}$ is the survey expectation.
+%
+%\item The updating of market expectations, which is revealed through past prices, but blurred by a noise trading shock $u$
+%
+%\end{itemize}
+%
+%\end{itemize}
+%
+%\end{block}}}%
+%BeginExpansion
+\begin{block}{Theoretical Underpinning of Link Between Information and Prices}
+
+\begin{itemize}
+
+\item Informed trading will be reflected in prices
+
+\item The model is a Hellwig (1980) type model from Vives (2008)
+
+\item Capture price action around the release of macroeconomic announcements.
+
+\item We model the release of a macroeconomic statistic, $\zeta$, as stochastic variable in 2-period model (see paper for full model)
+
+\item Price dynamics after release
+\[
+p_{t}=\alpha \left( \zeta -\bar{v}\right) -\frac{\alpha \beta }{b}\left(ap_{t-1}-u\right)
+\]
+
+\item Two factors determine the pricing dynamics:
+\begin{itemize}
+
+\item The surprise content of the macroeconomic release, i.e. $\left( \zeta -\bar{v}\right)$, where $\bar{v}$ is the survey expectation.
+
+\item The updating of market expectations, which is revealed through past prices, but blurred by a noise trading shock $u$
+
+\end{itemize}
+
+\end{itemize}
+
+\end{block}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\vspace{.4cm}}{\vspace{.4 cm}}}%
+%BeginExpansion
+\vspace{.4 cm}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{Empirical Model}{\begin{block}{Empirical Model}
+%
+%\begin{itemize}
+%
+%\item The conditional mean regression for each of the k=8 macroeconomic announcements \footnote{For announcement k, $r_{t}$ is the return 1 minute before release to 4 minutes after release, $\tilde{r}_{t-1}$ is respectively the 10-, 15-, 30- and 60-minute return prior to release,
+%$D_k$ is a dummy taking value 1 on announcement days and $(\zeta _{t}^{k}-\bar{v}_{t}^{k})$ is the surprise, i.e. actual outcome minus the survey expectation}
+%\[
+%r_{t}=\alpha _{0}+\gamma _{k}\tilde{r}_{t-1}+\gamma _{k}^{EA}D_{k}\tilde{r}_{t-1}+\alpha _{k}^{MA}(\zeta _{t}^{k}-\bar{v}_{t}^{k})+\varepsilon _{t} 
+%\]
+%
+%\item Conditional volatility equation\[
+%\sigma _{t}^{2}=\beta _{o}+\beta _{1}\varepsilon _{t-1}^{2}+\beta _{2}\sigma
+%_{t-1}^{2}+\beta _{3}D_{k}
+%\]
+%
+%\item A negative (positive) return prior to announcement $\Rightarrow $ expectations of a more positive (negative) release
+%
+%\item Hence $\gamma _{k}^{EA}<0$ $\Leftrightarrow$ pre-announcement prices contain informational value
+%
+%\item By re-arranging the conditional mean specification we obtain
+%\[
+%r_{t}=\alpha _{0}+\gamma _{k}\tilde{r}_{t-1}+\alpha _{k}^{MA}\left( \zeta
+%_{t}^{k}-\left( \bar{v}_{t}^{k}-\frac{\gamma _{k}^{EA}}{\alpha _{k}^{MA}}D_{k}\tilde{r}_{t-1}\right) \right) +\varepsilon _{t}
+%\]
+%
+%\item This gives us an estimator for the market-adjusted expectation
+%\[
+%v_{market}=\bar{v}_{t}^{k}-\frac{\gamma _{k}^{EA}}{\alpha _{k}^{MA}}D_{k}r_{t-1}
+%\]
+%\end{itemize}
+%\end{block}}}%
+%BeginExpansion
+\begin{block}{Empirical Model}
+
+\begin{itemize}
+
+\item The conditional mean regression for each of the k=8 macroeconomic announcements \footnote{For announcement k, $r_{t}$ is the return 1 minute before release to 4 minutes after release, $\tilde{r}_{t-1}$ is respectively the 10-, 15-, 30- and 60-minute return prior to release,
+$D_k$ is a dummy taking value 1 on announcement days and $(\zeta _{t}^{k}-\bar{v}_{t}^{k})$ is the surprise, i.e. actual outcome minus the survey expectation}
+\[
+r_{t}=\alpha _{0}+\gamma _{k}\tilde{r}_{t-1}+\gamma _{k}^{EA}D_{k}\tilde{r}_{t-1}+\alpha _{k}^{MA}(\zeta _{t}^{k}-\bar{v}_{t}^{k})+\varepsilon _{t} 
+\]
+
+\item Conditional volatility equation\[
+\sigma _{t}^{2}=\beta _{o}+\beta _{1}\varepsilon _{t-1}^{2}+\beta _{2}\sigma
+_{t-1}^{2}+\beta _{3}D_{k}
+\]
+
+\item A negative (positive) return prior to announcement $\Rightarrow $ expectations of a more positive (negative) release
+
+\item Hence $\gamma _{k}^{EA}<0$ $\Leftrightarrow$ pre-announcement prices contain informational value
+
+\item By re-arranging the conditional mean specification we obtain
+\[
+r_{t}=\alpha _{0}+\gamma _{k}\tilde{r}_{t-1}+\alpha _{k}^{MA}\left( \zeta
+_{t}^{k}-\left( \bar{v}_{t}^{k}-\frac{\gamma _{k}^{EA}}{\alpha _{k}^{MA}}D_{k}\tilde{r}_{t-1}\right) \right) +\varepsilon _{t}
+\]
+
+\item This gives us an estimator for the market-adjusted expectation
+\[
+v_{market}=\bar{v}_{t}^{k}-\frac{\gamma _{k}^{EA}}{\alpha _{k}^{MA}}D_{k}r_{t-1}
+\]
+\end{itemize}
+\end{block}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\end{column}}{\end{column}}}%
+%BeginExpansion
+\end{column}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{\begin{column}{.53\linewidth}}{\begin{column}{.53 \linewidth}}}%
+%BeginExpansion
+\begin{column}{.53 \linewidth}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\begin{columns}[c]}{\begin{columns}[c]}}%
+%BeginExpansion
+\begin{columns}[c]%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{\begin{column}{.48\linewidth}}{\begin{column}{.48 \linewidth}}}%
+%BeginExpansion
+\begin{column}{.48 \linewidth}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\vspace{2cm}}{\vspace{2cm}}}%
+%BeginExpansion
+\vspace{2cm}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{\begin{block}{Non-farm payroll release on Aug 1st 2008}}{\begin{block}{Non-farm Payroll Release on Aug 1st 2008}}}%
+%BeginExpansion
+\begin{block}{Non-farm Payroll Release on Aug 1st 2008}%
+%EndExpansion
+%~ \FRAME{ftbpF}{7.6942in}{5.5175in}{0pt}{}{}{nfp_release_010808.gif}{\special%
+%~ {language "Scientific Word";type "GRAPHIC";maintain-aspect-ratio
+%~ TRUE;display "USEDEF";valid_file "F";width 7.6942in;height 5.5175in;depth
+%~ 0pt;original-width 7.6666in;original-height 5.4898in;cropleft "0";croptop
+%~ "1";cropright "1";cropbottom "0";filename
+%~ 'nfp_release_010808.gif';file-properties "XNPEU";}}
+
+%TCIMACRO{\TeXButton{\end{block}}{\end{block}}}%
+%BeginExpansion
+\end{block}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{\end{column}}{\end{column}
+%}}%
+%BeginExpansion
+\end{column}
+%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{\begin{column}{.48\linewidth}}{\begin{column}{.48 \linewidth}}}%
+%BeginExpansion
+\begin{column}{.48 \linewidth}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\vspace{2cm}}{\vspace{2cm}}}%
+%BeginExpansion
+\vspace{2cm}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{\begin{block}{10-year T-notes future price on Aug 1st 2008}}{\begin{block}{10-year T-notes Futures Price on Aug 1st 2008}}}%
+%BeginExpansion
+\begin{block}{10-year T-notes Futures Price on Aug 1st 2008}%
+%EndExpansion
+%~ \FRAME{ftbpF}{7.6942in}{5.5175in}{0pt}{}{}{nfp_tnote_after_010808.gif}{%
+%~ \special{language "Scientific Word";type "GRAPHIC";maintain-aspect-ratio
+%~ TRUE;display "USEDEF";valid_file "F";width 7.6942in;height 5.5175in;depth
+%~ 0pt;original-width 7.6666in;original-height 5.4898in;cropleft "0";croptop
+%~ "1";cropright "1";cropbottom "0";filename
+%~ 'nfp_tnote_after_010808.gif';file-properties "XNPEU";}}
+
+%TCIMACRO{%
+%\TeXButton{\end{block}}{\end{block}
+%}}%
+%BeginExpansion
+\end{block}
+%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\end{column}}{\end{column}}}%
+%BeginExpansion
+\end{column}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\end{columns}}{\end{columns}}}%
+%BeginExpansion
+\end{columns}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\vspace{.4cm}}{\vspace{.4 cm}}}%
+%BeginExpansion
+\vspace{.4 cm}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{US and Euro Area Data Used in Study}{\begin{block}{US and Euro Area Data Used in Study}
+%      
+%\begin{itemize}
+%\item Intraday returns on German Bunds and US T-note futures contract since July 2003
+%
+%\item Covers a set of the most important indicators: US non-farm payroll,
+%US CPI (MoM), US industrial Production, US ISM manufacturing confidence, US
+%ISM non-manufacturing confidence, US Retail Sales, GE IFO business sentiment
+%indicator and GE ZEW indicator. Survey and actual releases of announcements are from Bloomberg
+%
+%\end{itemize}
+%
+%\end{block}}}%
+%BeginExpansion
+\begin{block}{US and Euro Area Data Used in Study}
+      
+\begin{itemize}
+\item Intraday returns on German Bunds and US T-note futures contract since July 2003
+
+\item Covers a set of the most important indicators: US non-farm payroll,
+US CPI (MoM), US industrial Production, US ISM manufacturing confidence, US
+ISM non-manufacturing confidence, US Retail Sales, GE IFO business sentiment
+indicator and GE ZEW indicator. Survey and actual releases of announcements are from Bloomberg
+
+\end{itemize}
+
+\end{block}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\vspace{.4cm}}{\vspace{.4 cm}}}%
+%BeginExpansion
+\vspace{.4 cm}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\begin{columns}[c]}{\begin{columns}[c]}}%
+%BeginExpansion
+\begin{columns}[c]%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{\begin{column}{.48\linewidth}}{\begin{column}{.48 \linewidth}}}%
+%BeginExpansion
+\begin{column}{.48 \linewidth}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{\begin{block}{Estimation Results - EA}}{\begin{block}{Estimation Results - EA}}}%
+%BeginExpansion
+\begin{block}{Estimation Results - EA}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{$\gamma_{k}^{EA}$ in regressions based on German Bunds futures contract data}{\begin{table}\centering
+%{\scriptsize
+%\begin{tabular}[c]{@{} l r @{} l r @{} l r @{} l r @{} l r}
+%\toprule
+%\multicolumn{9}{c}{$\gamma_{k}^{EA}$ in regressions based on German Bunds futures contract data} \\     
+%\midrule
+%& \multicolumn{2}{c}{10-minute} & \multicolumn{2}{c}{15-minute} & \multicolumn{2}{c}{30-minute} & \multicolumn{2}{c}{60-minute} \\
+%\midrule
+%CPI &     0.3693 &            &    -0.4279 &            &    -0.3825 &            &     0.2963 &            \\
+%& {\it \raisebox{4pt}{\tiny{(0.4412)}}} &            & {\it \raisebox{4pt}{\tiny{(0.4250)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3953)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2826)}}} &            \\
+%Ind. Prod. &    -0.0349 &            &    -0.1360 &            &     0.0591 &            &     0.0102 &            \\
+%& {\it \raisebox{4pt}{\tiny{(0.1709)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1121)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0955)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0572)}}} &            \\
+%ISM Man. &    -0.6535 &          * &    -0.1544 &            &    -0.6139 &        *** &    -0.1454 &            \\
+%& {\it \raisebox{4pt}{\tiny{(0.3599)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3279)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1739)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1873)}}} &            \\
+%ISM Non-Man. &    -0.1192 &            &    -0.1012 &            &    -0.0879 &            &    -0.1187 &            \\
+%& {\it \raisebox{4pt}{\tiny{(0.2421)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2315)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1154)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1006)}}} &            \\
+%Non-farm payroll &    -1.4065 &        *** &    -1.1396 &        *** &    -1.0712 &        *** &    -0.8921 &        *** \\
+%& {\it \raisebox{4pt}{\tiny{(0.2347)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2160)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2068)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2883)}}} &            \\
+%Retail Sales &    -0.1255 &            &    -0.2270 &            &    -0.0076 &            &    -0.0104 &            \\
+%& {\it \raisebox{4pt}{\tiny{(0.5921)}}} &            & {\it \raisebox{4pt}{\tiny{(0.4425)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3061)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2152)}}} &            \\
+%IFO (GE) &    -1.2399 &        *** &    -0.9802 &         ** &    -0.7288 &         ** &    -0.4900 &         ** \\
+%& {\it \raisebox{4pt}{\tiny{(0.4349)}}} &            & {\it \raisebox{4pt}{\tiny{(0.4093)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3200)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2127)}}} &            \\
+%ZEW (GE) &    -0.4829 &        *** &    -0.4685 &        *** &    -0.2450 &            &    -0.0773 &            \\
+%& {\it \raisebox{4pt}{\tiny{(0.1660)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1453)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1426)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1000)}}} &            \\
+%\bottomrule
+%\end{tabular}
+%}
+%\end{table}}}%
+%BeginExpansion
+\begin{table}\centering
+{\scriptsize
+\begin{tabular}[c]{@{} l r @{} l r @{} l r @{} l r @{} l r}
+\toprule
+\multicolumn{9}{c}{$\gamma_{k}^{EA}$ in regressions based on German Bunds futures contract data} \\     
+\midrule
+& \multicolumn{2}{c}{10-minute} & \multicolumn{2}{c}{15-minute} & \multicolumn{2}{c}{30-minute} & \multicolumn{2}{c}{60-minute} \\
+\midrule
+CPI &     0.3693 &            &    -0.4279 &            &    -0.3825 &            &     0.2963 &            \\
+& {\it \raisebox{4pt}{\tiny{(0.4412)}}} &            & {\it \raisebox{4pt}{\tiny{(0.4250)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3953)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2826)}}} &            \\
+Ind. Prod. &    -0.0349 &            &    -0.1360 &            &     0.0591 &            &     0.0102 &            \\
+& {\it \raisebox{4pt}{\tiny{(0.1709)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1121)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0955)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0572)}}} &            \\
+ISM Man. &    -0.6535 &          * &    -0.1544 &            &    -0.6139 &        *** &    -0.1454 &            \\
+& {\it \raisebox{4pt}{\tiny{(0.3599)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3279)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1739)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1873)}}} &            \\
+ISM Non-Man. &    -0.1192 &            &    -0.1012 &            &    -0.0879 &            &    -0.1187 &            \\
+& {\it \raisebox{4pt}{\tiny{(0.2421)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2315)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1154)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1006)}}} &            \\
+Non-farm payroll &    -1.4065 &        *** &    -1.1396 &        *** &    -1.0712 &        *** &    -0.8921 &        *** \\
+& {\it \raisebox{4pt}{\tiny{(0.2347)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2160)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2068)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2883)}}} &            \\
+Retail Sales &    -0.1255 &            &    -0.2270 &            &    -0.0076 &            &    -0.0104 &            \\
+& {\it \raisebox{4pt}{\tiny{(0.5921)}}} &            & {\it \raisebox{4pt}{\tiny{(0.4425)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3061)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2152)}}} &            \\
+IFO (GE) &    -1.2399 &        *** &    -0.9802 &         ** &    -0.7288 &         ** &    -0.4900 &         ** \\
+& {\it \raisebox{4pt}{\tiny{(0.4349)}}} &            & {\it \raisebox{4pt}{\tiny{(0.4093)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3200)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2127)}}} &            \\
+ZEW (GE) &    -0.4829 &        *** &    -0.4685 &        *** &    -0.2450 &            &    -0.0773 &            \\
+& {\it \raisebox{4pt}{\tiny{(0.1660)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1453)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1426)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1000)}}} &            \\
+\bottomrule
+\end{tabular}
+}
+\end{table}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\end{block}}{\end{block}}}%
+%BeginExpansion
+\end{block}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\end{column}}{\end{column}}}%
+%BeginExpansion
+\end{column}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{\begin{column}{.48\linewidth}}{\begin{column}{.48 \linewidth}}}%
+%BeginExpansion
+\begin{column}{.48 \linewidth}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{\begin{block}{Estimation Results - US}}{\begin{block}{Estimation Results - US}}}%
+%BeginExpansion
+\begin{block}{Estimation Results - US}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{$\gamma_{k}^{EA}$ in regressions based on US T-note futures contract data}{\begin{table}\centering
+%{\scriptsize
+%\begin{tabular}[c]{@{} l r @{} l r @{} l r @{} l r @{} l r}
+%\toprule
+%\multicolumn{9}{c}{$\gamma_{k}^{EA}$ in regressions based on US T-note futures contract data} \\     
+%\midrule
+%& \multicolumn{2}{c}{10-minute} & \multicolumn{2}{c}{15-minute} & \multicolumn{2}{c}{30-minute} & \multicolumn{2}{c}{60-minute} \\
+%\midrule
+%CPI &    -0.2616 &            &    -0.6163 &            &    -0.4011 &            &     0.1158 &            \\
+%& {\it \raisebox{4pt}{\tiny{(0.6697)}}} &            & {\it \raisebox{4pt}{\tiny{(0.5647)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3623)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2070)}}} &            \\
+%Ind. Prod. &    -0.0319 &            &    -0.0486 &            &     0.1052 &            &     0.0431 &            \\
+%& {\it \raisebox{4pt}{\tiny{(0.1820)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1354)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0946)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0490)}}} &            \\
+%ISM Man. &    -1.0313 &        *** &    -0.7215 &        *** &    -0.3541 &            &    -0.1406 &            \\
+%& {\it \raisebox{4pt}{\tiny{(0.3331)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0910)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2097)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1900)}}} &            \\
+%ISM Non-Man. &    -0.0968 &            &    -0.0906 &            &    -0.2284 &          * &    -0.2136 &            \\
+%& {\it \raisebox{4pt}{\tiny{(0.2742)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1740)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1198)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1189)}}} &            \\
+%Non-farm payroll &    -1.1739 &        *** &    -1.1696 &        *** &    -1.1798 &        *** &    -1.0858 &        *** \\
+%& {\it \raisebox{4pt}{\tiny{(0.3150)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3019)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2611)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3897)}}} &            \\
+%Retail Sales &    -0.7940 &            &    -0.7075 &            &    -0.3478 &            &    -0.4403 &            \\
+%& {\it \raisebox{4pt}{\tiny{(0.5991)}}} &            & {\it \raisebox{4pt}{\tiny{(0.5346)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3564)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2952)}}} &            \\
+%IFO (GE) &    -0.3600 &            &    -0.0301 &            &    -0.1152 &            &    -0.0475 &            \\
+%& {\it \raisebox{4pt}{\tiny{(0.2219)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1654)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1390)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0742)}}} &            \\
+%ZEW (GE) &    -0.4217 &        *** &    -0.1979 &            &    -0.0490 &            &    -0.0273 &            \\
+%& {\it \raisebox{4pt}{\tiny{(0.1427)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1121)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0860)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0569)}}} &            \\
+%\bottomrule
+%\end{tabular}
+%}
+%\end{table}}}%
+%BeginExpansion
+\begin{table}\centering
+{\scriptsize
+\begin{tabular}[c]{@{} l r @{} l r @{} l r @{} l r @{} l r}
+\toprule
+\multicolumn{9}{c}{$\gamma_{k}^{EA}$ in regressions based on US T-note futures contract data} \\     
+\midrule
+& \multicolumn{2}{c}{10-minute} & \multicolumn{2}{c}{15-minute} & \multicolumn{2}{c}{30-minute} & \multicolumn{2}{c}{60-minute} \\
+\midrule
+CPI &    -0.2616 &            &    -0.6163 &            &    -0.4011 &            &     0.1158 &            \\
+& {\it \raisebox{4pt}{\tiny{(0.6697)}}} &            & {\it \raisebox{4pt}{\tiny{(0.5647)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3623)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2070)}}} &            \\
+Ind. Prod. &    -0.0319 &            &    -0.0486 &            &     0.1052 &            &     0.0431 &            \\
+& {\it \raisebox{4pt}{\tiny{(0.1820)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1354)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0946)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0490)}}} &            \\
+ISM Man. &    -1.0313 &        *** &    -0.7215 &        *** &    -0.3541 &            &    -0.1406 &            \\
+& {\it \raisebox{4pt}{\tiny{(0.3331)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0910)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2097)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1900)}}} &            \\
+ISM Non-Man. &    -0.0968 &            &    -0.0906 &            &    -0.2284 &          * &    -0.2136 &            \\
+& {\it \raisebox{4pt}{\tiny{(0.2742)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1740)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1198)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1189)}}} &            \\
+Non-farm payroll &    -1.1739 &        *** &    -1.1696 &        *** &    -1.1798 &        *** &    -1.0858 &        *** \\
+& {\it \raisebox{4pt}{\tiny{(0.3150)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3019)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2611)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3897)}}} &            \\
+Retail Sales &    -0.7940 &            &    -0.7075 &            &    -0.3478 &            &    -0.4403 &            \\
+& {\it \raisebox{4pt}{\tiny{(0.5991)}}} &            & {\it \raisebox{4pt}{\tiny{(0.5346)}}} &            & {\it \raisebox{4pt}{\tiny{(0.3564)}}} &            & {\it \raisebox{4pt}{\tiny{(0.2952)}}} &            \\
+IFO (GE) &    -0.3600 &            &    -0.0301 &            &    -0.1152 &            &    -0.0475 &            \\
+& {\it \raisebox{4pt}{\tiny{(0.2219)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1654)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1390)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0742)}}} &            \\
+ZEW (GE) &    -0.4217 &        *** &    -0.1979 &            &    -0.0490 &            &    -0.0273 &            \\
+& {\it \raisebox{4pt}{\tiny{(0.1427)}}} &            & {\it \raisebox{4pt}{\tiny{(0.1121)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0860)}}} &            & {\it \raisebox{4pt}{\tiny{(0.0569)}}} &            \\
+\bottomrule
+\end{tabular}
+}
+\end{table}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\end{block}}{\end{block}}}%
+%BeginExpansion
+\end{block}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\end{column}}{\end{column}}}%
+%BeginExpansion
+\end{column}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\end{columns}}{\end{columns}}}%
+%BeginExpansion
+\end{columns}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\begin{columns}[c]}{\begin{columns}[t]}}%
+%BeginExpansion
+\begin{columns}[t]%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{\begin{column}{.5\linewidth}}{\begin{column}{.48 \linewidth}}}%
+%BeginExpansion
+\begin{column}{.48 \linewidth}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\vspace{.4cm}}{\vspace{.4 cm}}}%
+%BeginExpansion
+\vspace{.4 cm}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{Table - Hit-ratio}{\begin{block}{Hit-ratio Is Slightly Higher}
+%\begin{table}
+%{\tiny
+%\begin{tabular}{@{} l c c c c c c c c }
+%\toprule
+%\multicolumn{9}{c}{Hit ratio of the market-adjusted expectation and Bloomberg survey measures} \\
+%\midrule
+%&  \multicolumn{4}{c}{Bunds} & \multicolumn{4}{c}{T-notes} \\ 
+%\midrule
+%& 10-minute & 15-minute & 30-minute & 60-minute& 10-minute & 15-minute & 30-minute & 60-minute\\
+%\midrule
+%CPI &       0.43 &       0.38 &       0.42 &       0.26 &       0.41 &       0.36 &       0.40 &       0.33 \\
+%Ind. Prod. &       0.41 &       0.44 &       0.49 &       0.33 &       0.51 &       0.48 &       0.43 &       0.35 \\
+%ISM Man. &       0.49 &       0.52 &       0.48 &       0.53 &       0.54 &       0.60 &       0.58 &       0.54 \\
+%ISM Non-Man. &       0.48 &       0.48 &       0.50 &       0.44 &       0.55 &       0.46 &       0.53 &       0.51 \\
+%Non-farm Payroll &       0.53 &       0.57 &       0.49 &       0.53 &       0.52 &       0.54 &       0.50 &       0.50 \\
+%Retail Sales &       0.45 &       0.55 &       0.26 &       0.33 &       0.51 &       0.53 &       0.60 &       0.63 \\
+%IFO (GE) &       0.60 &       0.52 &       0.54 &       0.57 &       0.55 &       0.49 &       0.42 &       0.42 \\
+%ZEW (GE) &       0.54 &       0.60 &       0.57 &       0.61 &       0.53 &       0.54 &       0.55 &       0.64 \\
+%\bottomrule
+%\end{tabular}
+%}
+%\end{table}
+%\end{block}}}%
+%BeginExpansion
+\begin{block}{Hit-ratio Is Slightly Higher}
+\begin{table}
+{\tiny
+\begin{tabular}{@{} l c c c c c c c c }
+\toprule
+\multicolumn{9}{c}{Hit ratio of the market-adjusted expectation and Bloomberg survey measures} \\
+\midrule
+&  \multicolumn{4}{c}{Bunds} & \multicolumn{4}{c}{T-notes} \\ 
+\midrule
+& 10-minute & 15-minute & 30-minute & 60-minute& 10-minute & 15-minute & 30-minute & 60-minute\\
+\midrule
+CPI &       0.43 &       0.38 &       0.42 &       0.26 &       0.41 &       0.36 &       0.40 &       0.33 \\
+Ind. Prod. &       0.41 &       0.44 &       0.49 &       0.33 &       0.51 &       0.48 &       0.43 &       0.35 \\
+ISM Man. &       0.49 &       0.52 &       0.48 &       0.53 &       0.54 &       0.60 &       0.58 &       0.54 \\
+ISM Non-Man. &       0.48 &       0.48 &       0.50 &       0.44 &       0.55 &       0.46 &       0.53 &       0.51 \\
+Non-farm Payroll &       0.53 &       0.57 &       0.49 &       0.53 &       0.52 &       0.54 &       0.50 &       0.50 \\
+Retail Sales &       0.45 &       0.55 &       0.26 &       0.33 &       0.51 &       0.53 &       0.60 &       0.63 \\
+IFO (GE) &       0.60 &       0.52 &       0.54 &       0.57 &       0.55 &       0.49 &       0.42 &       0.42 \\
+ZEW (GE) &       0.54 &       0.60 &       0.57 &       0.61 &       0.53 &       0.54 &       0.55 &       0.64 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+\end{block}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\vspace{1.7cm}}{\vspace{1.7 cm}}}%
+%BeginExpansion
+\vspace{1.7 cm}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{Paper can be downloaded at www.juloverby.dk}{\begin{block}{Download}
+%\begin{itemize}
+%
+%\item Paper can be downloaded at www.juloverby.dk
+%
+%\end{itemize}
+%
+%\end{block}}}%
+%BeginExpansion
+\begin{block}{Download}
+\begin{itemize}
+
+\item Paper can be downloaded at www.juloverby.dk
+
+\end{itemize}
+
+\end{block}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\end{column}}{\end{column}}}%
+%BeginExpansion
+\end{column}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{\begin{column}{.48\linewidth}}{\begin{column}{.48 \linewidth}}}%
+%BeginExpansion
+\begin{column}{.48 \linewidth}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\vspace{.4cm}}{\vspace{.4 cm}}}%
+%BeginExpansion
+\vspace{.4 cm}%
+%EndExpansion
+
+%TCIMACRO{%
+%\TeXButton{Four Results}{\begin{block}{Four Results}
+%
+%\begin{itemize}
+%
+%\item Announcements with the highest market impact are
+%those with the strongest degree of adjustment
+%
+%\item Domestic markets contain most information about domestic
+%releases
+%
+%\item Measures of market-adjusted expectations increase in precision closer to
+%the announcement / prices have the highest information shortly before release
+%
+%\item Forecast errors of the market-adjusted expectation
+%measure is not improved, but appear to be better at
+%capturing the directionality of the surprise, i.e. whether the release
+%surprises positively or negatively
+%
+%\end{itemize}
+%
+%\end{block}}}%
+%BeginExpansion
+\begin{block}{Four Results}
+
+\begin{itemize}
+
+\item Announcements with the highest market impact are
+those with the strongest degree of adjustment
+
+\item Domestic markets contain most information about domestic
+releases
+
+\item Measures of market-adjusted expectations increase in precision closer to
+the announcement / prices have the highest information shortly before release
+
+\item Forecast errors of the market-adjusted expectation
+measure is not improved, but appear to be better at
+capturing the directionality of the surprise, i.e. whether the release
+surprises positively or negatively
+
+\end{itemize}
+
+\end{block}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\end{column}}{\end{column}}}%
+%BeginExpansion
+\end{column}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\end{columns}}{\end{columns}}}%
+%BeginExpansion
+\end{columns}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\end{column}}{\end{column}}}%
+%BeginExpansion
+\end{column}%
+%EndExpansion
+
+%TCIMACRO{\TeXButton{\end{columns}}{\end{columns}}}%
+%BeginExpansion
+\end{columns}%
+%EndExpansion
+\end{frame}
+
+\end{document}
