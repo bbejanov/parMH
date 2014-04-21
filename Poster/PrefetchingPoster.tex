@@ -1,0 +1,93 @@
+\documentclass[final]{beamer}
+\usetheme{RJH}
+%~ \usepackage{ragged2e}
+%~ \let\raggedright=\RaggedRight
+\usepackage[orientation=landscape,size=a1,scale=1.4,debug]{beamerposter}
+\usepackage[absolute,overlay]{textpos}
+\usepackage[english]{babel}
+\setlength{\TPHorizModule}{1cm}
+\setlength{\TPVertModule}{1cm}
+
+
+\title{Parallel Metropolis-Hastings Algorithm by Prefetching}
+\author{Boyan Bejanov}
+%~ \institute{Banc of Canada \\ Carleton University}
+\footer{
+\parbox{0.48\textwidth}{
+    \flushleft \small
+    COMP5704 Project, School of Computer Science, Carleton University
+    }
+\hfill
+\parbox{0.48\textwidth}{\flushright
+Bank of Canada}
+}
+\date{April 2014}
+
+\begin{document}
+\begin{frame}[t]{} 
+
+\begin{columns}[t]
+    \begin{column}{0.3\textwidth}
+        \begin{block}{Introduction}
+             \textbf{Metropolis-Hastings (MH)} is a Markov Chain Monte Carlo (MCMC)
+                algorithm which is used to simulate random samples from
+                probability distributions that are difficult to simulate
+                otherwise.
+                
+            \textbf{Prefetching} is a parallelization technique for the
+                MH algorithm.  It is applicable in situations
+                where the target p.d.f.,
+                \textbf{ $\boldsymbol{\pi}\bold{(x)}$, is
+                    \begin{itemize}
+                        \item computationally very expensive;
+                        \item impractical to parallelize.                
+                    \end{itemize}
+                }
+
+            For example, in Bayesian inference for large economic models the
+            posterior density of the model parameters is computed by Kalman
+            filter. 
+        \end{block}
+        
+        \begin{block}{Prefetching}
+        \end{block}
+        
+    \end{column}
+        \begin{column}{0.3\textwidth}
+        \begin{block}{Full prefetching}
+            \begin{itemize}
+            \item Prefetching is a parallelization
+                approach for Metropolis-Hastings algorithm
+            \end{itemize}
+        \end{block}
+    \end{column}
+    \begin{column}{0.3\textwidth}
+        \begin{block}{Incomplete prefetching}
+            \begin{itemize}
+            \item Prefetching is a parallelization
+                approach for Metropolis-Hastings algorithm
+            \end{itemize}
+        \end{block}
+    \end{column}
+\end{columns}
+
+%~ 
+%~ \begin{textblock}{19.5}(1,5)
+%~ \begin{block}{The spotted frog habitat}
+%~ Blah blah blah
+%~ \end{block}
+%~ 
+%~ \begin{block}{Some interesting specimens}
+%~ Stuff and nonsense
+%~ \end{block}
+%~ \end{textblock}
+%~ 
+%~ \begin{textblock}{19.3}(21.8,5)
+%~ \begin{block}{My latest paper about frogs}
+%~ Published in the \emph{Journal of Irreproducible Results}.
+%~ \end{block}
+%~ 
+%~ \end{textblock}
+%~ 
+\end{frame}
+\end{document}
