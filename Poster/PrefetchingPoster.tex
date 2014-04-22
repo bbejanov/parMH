@@ -5,13 +5,14 @@
 \usepackage[orientation=landscape,size=a1,scale=1.4,debug]{beamerposter}
 \usepackage[absolute,overlay]{textpos}
 \usepackage[english]{babel}
+\usepackage{color}
 \setlength{\TPHorizModule}{1cm}
 \setlength{\TPVertModule}{1cm}
 
+\usepackage{lmodern}% http://ctan.org/pkg/lm
 
 \title{Parallel Metropolis-Hastings Algorithm by Prefetching}
 \author{Boyan Bejanov}
-%~ \institute{Banc of Canada \\ Carleton University}
 \footer{
 \parbox{0.48\textwidth}{
     \flushleft \small
@@ -26,68 +27,139 @@ Bank of Canada}
 \begin{document}
 \begin{frame}[t]{} 
 
+%~ \vspace{-1ex}
+
 \begin{columns}[t]
     \begin{column}{0.3\textwidth}
+
         \begin{block}{Introduction}
-             \textbf{Metropolis-Hastings (MH)} is a Markov Chain Monte Carlo (MCMC)
+            \begin{description}
+             \item[Metropolis-Hastings (MH)] is a Markov Chain Monte Carlo (MCMC)
                 algorithm which is used to simulate random samples from
                 probability distributions that are difficult to simulate
-                otherwise.
-                
-            \textbf{Prefetching} is a parallelization technique for the
+                otherwise.                
+            \item[Prefetching] is a parallelization technique for the
                 MH algorithm.  It is applicable in situations
                 where the target p.d.f.,
-                \textbf{ $\boldsymbol{\pi}\bold{(x)}$, is
+                \textbf{ $\boldsymbol{\pi}\mathbf{(x)}$, is
                     \begin{itemize}
                         \item computationally very expensive;
                         \item impractical to parallelize.                
                     \end{itemize}
                 }
-
-            For example, in Bayesian inference for large economic models the
-            posterior density of the model parameters is computed by Kalman
-            filter. 
+            \end{description}
+            E.g. Bayesian inference for  economic models
+            %~ the posterior density of the model parameters is computed by Kalman
+            %~ filter.
         \end{block}
-        
-        \begin{block}{Prefetching}
-        \end{block}
-        
-    \end{column}
-        \begin{column}{0.3\textwidth}
-        \begin{block}{Full prefetching}
+       
+        \begin{block}{MH algorithm}
+            Markov chain with accept-reject transition rule:
             \begin{itemize}
-            \item Prefetching is a parallelization
-                approach for Metropolis-Hastings algorithm
+                \item current state is $X_0$
+                \item propose candidate $Y \sim q(X_0, \cdot)$
+                \item accept the candidate with probability
+                    $$\alpha = \frac{\pi(Y)q(Y,X_0)}{\pi(X_0)q(X_0,Y)}$$
             \end{itemize}
         \end{block}
+
+        \begin{block}{Prefetching tree}
+            \includegraphics[width=.9\textwidth]{PrefetchingTree.png}
+            \begin{itemize}
+            \item At each node the current state is in white
+            \item The proposed candidate is in orange
+            \end{itemize}
+        \end{block}
+     
     \end{column}
     \begin{column}{0.3\textwidth}
-        \begin{block}{Incomplete prefetching}
+
+        \begin{block}{Implemetation}        
+        \centering {
+        \begin{tabular}[c]{|c|c||c||c|c||c|c|c|c||c|c|c|c|c|c|c|c|}
+            \hline
+            $k$ & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15\\
+            \hline
+            $s$ & 0 & 1 & \multicolumn{2}{c||}{2} & \multicolumn{4}{c||}{3} & \multicolumn{8}{c|}{4} \\
+            \hline
+            $c$ & $\ast$ & 0 & 0 & 1 & 0 & 1 & 2 & 3 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\
+            \hline
+        \end{tabular}
+        }
+        \begin{itemize}
+            \item $X_k$ was proposed at step $s=\left\lfloor\log k\right\rfloor+1$
+            \item $X_k$ was proposed from $X_c$, $c=k-2^{s-1}$
+            \item The two children of proposal $X_k$ are $X_a$ and $X_r$ where
+                $a = k+2^s$ and $r = a-2^{s-1}$
+        \end{itemize}
+        \end{block}
+
+        \begin{block}{Full prefetching}
             \begin{itemize}
-            \item Prefetching is a parallelization
-                approach for Metropolis-Hastings algorithm
+            \item Consider all $2^n$ possible paths $n$ steps ahead
+            \item Compute $2^n-1$ evaluations of $\pi(\cdot)$ in parallel
+            \item Run $n$ steps of the Markov chain sequentially 
+            \end{itemize}
+            
+        \end{block}
+
+        \begin{block}{Complexity of Full Prefetching}
+            \begin{description}
+                \item[Sequentail time] $\displaystyle T_s = n$ % \phantom{\frac{M}{M}}$
+                \item[Parallel time] $\displaystyle T(n,p) = \frac{2^n-1}{p}$
+                \item[Speedup] $\displaystyle s(n,p) = \frac{np}{2^n-1}$
+                \item[N.B.] \textit{\textcolor{red}{Speedup  is not logarithmic in $p$}}
+            \end{description}
+        \end{block}
+
+        \begin{block}{Speedup graph}
+        \includegraphics[width=1\textwidth]{speedup-full.png}
+        \end{block}
+      
+    \end{column}
+    \begin{column}{0.3\textwidth}
+
+       \begin{block}{Incomplete prefetching}
+            \begin{itemize}
+            \item Prefetch only $p$ proposals, not the full tree
+            \item For $p<2^n-1$ the chain may not make $n$ steps
+            \item By scaling the proposal distribution, $q(x,y)$, we can 
+                control the acceptance rate, denoted $\alpha^*$
+            \item At each branch the probability to accept is $\alpha^*$ and
+                the probability to reject is $1-\alpha^*$
+            \item The probability to reach given candidate is the product
+                of all probabilities along its path
+            \item Evaluate $p$ candidates that maximize the expected
+                depth to be reached, denoted $D(p)$
             \end{itemize}
         \end{block}
+
+        \begin{block}{Complexity of Incomplete Prefetching}
+            \begin{description}
+                \item[Parallel time] $\displaystyle T(p) = \frac{n}{D(p)}$
+                \item[Speedup] $\displaystyle s(p) = D(p) \phantom{\frac{M}{M}}$
+            \end{description}
+            \vspace{2ex}
+            \begin{itemize}
+                \item E.g. for $\alpha^* = 0.234$
+            \end{itemize}
+            \centerline{
+            \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|} % c|c|c|c|c|}
+                \hline
+                $p$    &1  &2    &3     &4     &5     &6     &7     &8     &9   \\%  &10     &11    &12   &13   &14    & 15 \\
+                \hline
+                $D(p)$ & 1 &1.77 & 2.35 & 2.80 & 3.15 & 3.41 & 3.64 & 3.84 & 4.03 \\%& 4.20  & 4.36 &4.49 &4.63 & 4.77 & 4.88  \\
+                \hline
+            \end{tabular}
+            }
+        \end{block}
+
+        \begin{block}{Speedup graph}
+        \includegraphics[width=1\textwidth]{speedup-partial.png}
+        \end{block}
+      
     \end{column}
 \end{columns}
 
-%~ 
-%~ \begin{textblock}{19.5}(1,5)
-%~ \begin{block}{The spotted frog habitat}
-%~ Blah blah blah
-%~ \end{block}
-%~ 
-%~ \begin{block}{Some interesting specimens}
-%~ Stuff and nonsense
-%~ \end{block}
-%~ \end{textblock}
-%~ 
-%~ \begin{textblock}{19.3}(21.8,5)
-%~ \begin{block}{My latest paper about frogs}
-%~ Published in the \emph{Journal of Irreproducible Results}.
-%~ \end{block}
-%~ 
-%~ \end{textblock}
-%~ 
 \end{frame}
 \end{document}
