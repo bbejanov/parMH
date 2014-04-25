@@ -4,14 +4,16 @@
 % ---------------------------------------------------------------------------
 % to create Type I fonts type "dvips -P cmz -t letter <filename>"
 % ===========================================================================
-\documentclass[11pt]{article}       %--- LATEX 2e base
+\documentclass[11pt,letterpaper]{article}       %--- LATEX 2e base
 \usepackage{latexsym}               %--- LATEX 2e base
+\usepackage{amsmath,amssymb}
 %---------------- Wide format -----------------------------------------------
 \textwidth=6in \textheight=9in \oddsidemargin=0.25in
 \evensidemargin=0.25in \topmargin=-0.5in
 %--------------- Def., Theorem, Proof, etc. ---------------------------------
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
+\newtheorem{claim}{Claim}
 \newtheorem{lemma}{Lemma}
 \newtheorem{corollary}{Corollary}
 \newtheorem{property}{Property}
@@ -37,6 +39,12 @@
 %--------------- Figures ----------------------------------------------------
 \usepackage{graphicx}
 
+\newcommand{\includeFigW}[4]     {\begin{figure}[htb] \begin{center}
+                                 \includegraphics
+                                 [#3] %comment this line to disable scaling
+                                 {#2}\caption{\label{#1}#4} \end{center} \end{figure}}
+                                 % usage: \includeFig{label}{file}{args-for-includegraphics}{caption}
+
 \newcommand{\includeFig}[3]      {\begin{figure}[htb] \begin{center}
                                  \includegraphics
                                  [width=4in,keepaspectratio] %comment this line to disable scaling
@@ -52,18 +60,15 @@
 % Title
 % ############################################################################
 
-\title{--- Your Project Title ---}
+\title{Parallel Metropolis-Hastings Algorithms}
 
 
 % ############################################################################
 % Author(s) (no blank lines !)
 \author{
 % ############################################################################
-John Doe\\
-School of Computer Science\\
-Carleton University\\
-Ottawa, Canada K1S 5B6\\
-{\em John-Doe@scs.carleton.ca}
+Boyan Bejanov\\
+{\em bbejanov@bankofcanada.ca}
 % ############################################################################
 } % end-authors
 % ############################################################################
@@ -75,6 +80,9 @@ Ottawa, Canada K1S 5B6\\
 % ############################################################################
 \begin{abstract}
 Give a brief overview of what you have achieved.
+
+\textbf{=========== TODO ==============}
+
 \end{abstract}
 
 
@@ -82,63 +90,472 @@ Give a brief overview of what you have achieved.
 \section{Introduction} \label{intro}
 % ############################################################################
 
-Introduce your project topic (start from parallel computing in
-general and lead to your particular topic). Describe your project
-goals. Describe what you have achieved in your project. Outline
-the structure of your paper. (In Section~\ref{litrev}, we will
-review the relevant literature. Section~\ref{projrep} will present
-the results of our project. In Section~\ref{subsect1}, ...
-Section~\ref{concl} concludes the paper.
+The Monte Carlo methods (MC) are a class of numerical integration techniques,
+where the integral is interpreted as the expected value of some function of
+some random variable.  The expectation can be statistically estimated from a
+sample drawn from the same distribution as the underlying random variable and
+this estimate serves as the numerical approximation of the integral.  Needless
+to say, the MC methods are also applicable to problems other than numerical
+integration, so long as they can be reduced to the evaluation of an expected
+value.  
+
+The successful application of MC relies on the availability of numerical
+techniques for simulation of random samples from a distribution, which is given
+by its probability density function (pdf).  We will denote this \emph{target}
+pdf by $\pi(x)$.  It is always assumed that a stream of independent random
+numbers with uniform distribution in the interval $(0,1)$ is available without
+ado.  For some of the other common probability distributions there are direct
+methods of simulation, which perform some computation on the uniform random
+numbers, transforming them into random numbers of the desired distribution.
+However, these techniques are limited to special cases.  One of the most
+important general sampling technique is the Acceptance-Rejection sampling (AR).
+Each iteration of the AR goes in two steps.  We first simulate a random number,
+$X$, from some other distribution, which can be simulated by an already known
+method.  We call this distribution \emph{proposal} and denote its pdf by
+$q(x)$.  In the second step, we simulate a uniform random number and compare it
+to the adjusted ratio of the target and proposal densities.  Based on this
+comparison, we either accept $X$ as a random number from $\pi$, or we reject
+and discard it.  The AR method is embarrassingly parallel, since multiple
+random numbers can be simulated on multiple processors simultaneously.  In
+addition, it produces a sample of independent random numbers, which can be used
+directly in an MC method.  However, its applicability is limited to the cases
+where $\pi(x)$ is given explicitly by a known formula.  Even then, the
+computational efficiency of AR (as measured by the acceptance rate) depends on
+the choice of the proposal, $q(x)$, and a tight estimate of the adjustment
+constant in the AR test, both of which can require some non-trivial
+mathematical derivations, especially for multivariate distributions.  
+
+The method of choice in the cases of a multivariate distribution of high
+dimension, or when the formula for the target pdf is too complicated, or when
+the target pdf can only be computed numerically, is the Markov Chain Monte
+Carlo method (MCMC).  A Markov Chain is a process, which is described by a
+\emph{state space}, i.e. the set of all possible values the process can take,
+and a transition rule, which may depend only on the current state, but not any
+earlier ones. It is known from the theory of Markov chains that, if certain
+conditions are satisfied, the process has an \emph{invariant distribution} and
+the distributions of successive states converge to the invariant distribution.
+In the MCMC method, we construct a transition rule, such that the resulting
+Markov chain has an invariant distribution, and this invariant distribution is
+exactly $\pi(x)$.  The initial part of the chain, before the distribution of
+states gets close enough to the invariant distribution, is known as
+\emph{burn-in} and is discarded.  The remaining chain can be used as the random
+sample in a Monte Carlo method, although with the caveat that it is not an
+independent random sample, so the auto-correlation of the process must be taken
+into account.  
+
+The AR, MCMC and other methods for simulation of random variables, as well as
+the underlying mathematical theories, can be found in \cite{ross.simulation}.
+
+
+The Metropolis-Hastings algorithm (M-H) combines AR and MCMC.  Effectively, it
+is a recipe for constructing the transition rule of a Markov chain given its
+desired invariant distribution.  Once again, we have a proposal distribution,
+however this time the proposal distribution depends on the current state of the
+chain, i.e. $q=q(x;y)$. The good news is that the accept-reject test is a ratio
+of the values of $q$ and $\pi$ at the current and the proposed points with no
+adjustment constants to be derived in advance.  If the proposed point is
+accepted, then it becomes the next state of the chain, otherwise the next state
+is equal to the current state, i.e. no points are discarded as it was the case
+in the AR sampling method.  An intuitive and self-contained presentation of the
+Metropolis-Hastings method can be found in \cite{understanding.MH}.
+
+Other than Monte Carlo type estimations of expected values, the M-H is a
+general method for simulating random samples from distributions that are
+otherwise impossible to simulate.  It is particularly popular for Bayesian
+analysis of complex stochastic models.  Such models always involve a number of
+parameters, which rarely can be derived from first principles.  More
+frequently, the parameters are estimated from observed data using
+maximum-likelihood, or some other methods of statistical estimation.  When the
+model is sufficiently complex, the usual inference based on confidence
+intervals for the estimated parameters is impossible to derive.  In such cases,
+the approach of Bayesian statistics is to consider the parameters as random
+variables,  simulate a sample from their joint distribution, and use this
+sample to infer the properties of the distribution that are of interest.
+
+The specific focus in this project is the application of M-H to Bayesian
+inference of large Dynamic Stochastic General Equilibrium models (DSGE), which
+are used in the field of macro-economics (\cite{strid2010adaptive}).  The
+likelihood function is computed using a Kalman filter, which can be
+computationally very expensive, especially in the nonlinear case.  Therefore,
+when considering various methods, we will keep in mind the (simplifying)
+assumption that the evaluation of $\pi(x)$ is much more time consuming than all
+the other computations in a single step of the Markov chain (such as the
+computation of $q(x,y)$, simulation from $q(x,y)$, individual arithmetic
+operations). 
+
+The objectives of this project include
+\begin{itemize}
+\item Survey the existing methods and evaluate them.
+\item Identify the most promising method, for the particular setting we have, and implement it.
+\item Investigate the benefits of parallelization in terms of theoretical and
+     practically achieved speedup.
+\item Consider the question of P-completeness of the M-H algorithm.
+\end{itemize}
+
 
 
 % ############################################################################
 \section{Literature Review} \label{litrev}
 % ############################################################################
 
-Give an overview of the relevant literature. Cite all relevant
-papers, like \cite{DEL07}, \cite{PD07}, \cite{DER07}, \cite{LDR07},
-\cite{DLX06}, \cite{CDE06}, and \cite{DFL06}. Outline for each paper
-the relevant results in relation to your project. Make sure that you
-don't just list all relevant papers in random order. Devise a scheme
-to group papers by subject. The goal of this section is to present
-to the reader the state-of-the-art in the field selected for your
-project.
+The search for parallel algorithms for M-H and other MCMC techniques has received
+much attention from the computational statistics community as well as from 
+researchers in various fields where MCMC finds real-world applications.  
+Unfortunately, there seems to be little attention given to this question 
+in the world of computer science.
+
+In \cite{solonen2012efficient} the authors propose an \emph{adaptive} M-H
+method for estimation of a climate model, where multiple Markov chains are
+simulated in parallel.  In an adaptive MCMC algorithm, the computed values of
+the target pdf are used to construct a better proposal distribution.  Each
+chain must undergo its own burn-in, therefore the time before the algorithm
+starts yielding useful output is the same as in the sequential case.  This
+greatly limits the gain in speedup due to parallelization.  However, the
+periodic updates to the proposal distribution in each chain use the values of
+the target density produced by all chains.  This way the algorithm produces
+higher quality proposal compared to the sequential version, thus improving the
+\emph{statistical efficiency} of the chain.
+
+Another recent application of parallel MCMC is presented in
+\cite{wu2012parallel} in the context of Bayesian models of animal breeding and
+genetics.  Here the authors also consider multiple Markov chains running in
+parallel and acknowledge that this is only applicable to single-parameter
+models and simpler models with few parameters, where the burn-in is small.  In
+the case of more complex models, they use parallel computation of $\pi(x)$ by
+leveraging specific properties of the particular model they consider.
+
+A modified M-H algorithm is presented in \cite{miller2010markov}.  It simulates
+a single Markov chain with improved  statistical properties by considering
+multiple proposal points at each step.  The proposals are computed in  parallel
+and one of them is randomly selected to be the next state.  This allows for
+better coverage of the state space, i.e. reduced burn-in time.  However, the
+time for computing one step is the same as in the sequential 
+M-H algorithm.
+
+
+In \cite{vanderwerken2013parallel}, the authors propose a parallel MCMC method
+which is only applicable to numerical integration.  The state space is
+partitioned into disjoint regions and the total integral is evaluated as the
+sum of the integrals over the individual regions. A separate Markov chain is
+simulated for each region and all chains run in parallel.  The clever
+innovation of this method is that it allows the chains to leave their
+respective regions and are recombined afterwards.  This considerably simplifies
+previous methods using partitioning, which must contain the individual chains
+within their regions.  Unfortunately, this method is not applicable in our
+case, since it only computes the expectation, but doesn't produce a random
+sample.
+
+In general the parallel MCMC methods can be divided into methods using multiple
+independent chains that are simulated in parallel and methods that simulate a
+single chain in parallel.  All of the methods discussed so far are in the first
+category.  The paper \cite{guo2012parallel} contains a recent and detailed
+overview of parallel MCMC methods based on multiple chains.
+
+The single chain parallel methods can be further subdivided into \emph{within
+draw} and \emph{between draw} parallelization, as suggested in
+\cite{strid2010efficient}.  In the former class of methods multiple processors
+collaborate on a single computation of the target density.  Clearly this
+approach is problem-specific.  The between draw parallel methods are
+characterized by considering multiple future steps of the chain and
+pre-computing the necessary values of the target density in parallel. 
+
+A Metropolis-Hastings algorithm whose proposal density does not depend on the
+current state of the Markov chain is called \emph{Independence}
+Metropolis-Hastings (IMH).  In this case the between-draw parallelization is
+straight-forward.  Unfortunately, a good independence proposal is difficult to
+construct beforehand.  Instead, in the method proposed in
+\cite{strid2010adaptive}, an independence proposal is estimated from the values
+of $\pi$ that have already been computed.  As the chain runs, the independence
+proposal is adapted to any new information about the target density.  However,
+the Markov chain must start with a non-independence proposal.  At each
+adaptation point, the adapted proposal is constructed as a mixture of the newly
+re-estimated independence proposal and the non-independence proposal, with the
+relative weight of the independence proposal gradually increasing.  See also
+\cite{holden2009adaptive} and \cite{giordani2010adaptive}, which suggest
+similar algorithms with different approaches to constructing the independence
+proposal.  Many other examples of adaptive MCMC can be found in
+\cite{roberts2009examples}.
+
+A regeneration time in a Markov chain is a time when the state is independent of
+the history of the chain up to that point.  The pieces of the chain between two
+regeneration times are called \emph{tours} and are independent and identically
+distributed entities.  This allows multiple tours of the chain to be simulated
+in parallel, each starting from a regeneration time and running until the next
+regeneration time is encountered.  The tours are then concatenated to form a
+single long chain.  Although a wide class of Markov chain are regenerative, the
+identification of regeneration points is very difficult (cf.
+\cite{mykland1995regeneration} and \cite{gilks1998adaptive}).  More recently,
+\cite{brockwell2005identification} proposed a constructive method of
+identifying regeneration times in the context of parallel M-H.  Using
+regeneration is only advantageous for low- and moderately-dimensional
+distribution, because the expected length of the tour increases dramatically
+with dimension.  
+
+A recent algorithm, proposed in \cite{brockwell2006parallel}, is called 
+pre-fetching.  Suppose the Markov chain of an M-H algorithm is at some state
+$X_n$ at some time $n$.  All possible trajectories for the next $h$ steps 
+form a full binary tree with root $X_n$ and depth $h$.  At each node 
+the two edges correspond to "accept" and "reject".  
+There are $2^h$ possible paths and a total of $2^h$ different 
+proposal states in the tree.  The idea of pre-fetching is to compute the values of $\pi$
+at the $2^h$ proposals in parallel and then perform the $h$ accept-reject 
+steps sequentially on the master process.  In \cite{strid2010efficient} 
+the authors suggest an improvement of this algorithm, whereby only the most probable 
+paths are pre-fetched, thus reducing the number of required processors, although at
+the risk that fewer than $h$ steps may be completed.  Another method suggested in 
+\cite{byrd2008reducing} can be interpreted as a special case of the methodology 
+suggested in \cite{strid2010efficient}.  The authors leverage the fact that the optimal 
+acceptance rate (from probabilistic point of view) is usually low and pre-fetch 
+only the "reject" branches.
 
 % ############################################################################
 \section{Project Report} \label{projrep}
 % ############################################################################
 
-Present the results of your project. Add subsections as appropriate...
-
 % ----------------------------------------------------------------------------
-\subsection{Subsection 1} \label{subsect1}
+\subsection{P-Completeness} \label{subsect-PComp}
 % ----------------------------------------------------------------------------
 
-...
+It is interesting to consider the question of whether the simulation of a
+Markov chain is a P-complete problem.  Surprisingly, this question doesn't seem
+to have been addressed -- literature search yields no hits.
+
+\begin{claim}
+The simulation of a Markov chain is a P-complete problem
+\end{claim}
+\begin{proof} 
+Let $G$ be an instance of the generability problem:
+	"given a set $X$ with $|X|=n$, 
+	$T\subseteq X$, $x\in X$ and a binary operation $*$, 
+	is $x$ in the closure of $T$ under $*$?"
+We will construct a Markov chain that solves this generability problem.
+
+We start by introducing an arbitrary labeling of the different elements of $X$
+with different integers from $0$ to $n-1$.  In fact, without loss of
+generality, we will assume in what follows that $X=\left\{0, \ldots,
+n-1\right\}$. 
+
+The states of our Markov chain will be triples $(A,k,c)$, where $A$ is a subset
+of $X$ and $k$ is an element of $X$, and $c$ is a true/false flag.  The set $A$
+is the portion of the closure of $T$ computed so far.  The element $k$ will
+allow us to keep track of which element we need to consider next.  The flag $c$
+will keep track of whether the set $A$ has changed since the last time we
+visited $x$.
+
+Suppose the current state is $(A, k, c)$.  Our transition rule is deterministic
+and follows the following rules.
+\begin{itemize}
+\item The next $A$ will be either $A$ itself or $A$ with $k$ added to it.  We
+add $k$ only if it isn't already in $A$ and can be generated from it, i.e.
+there are $i,j\in A$ s.t. $i*j=k$.
+\item The next $k$ will always be the next element of $X$ in a circular order,
+i.e. $k+1\bmod n$.  
+\item If $k$ was added to $A$ then the next state will have $c=true$, otherwise
+we don't change $c$.  
+\end{itemize}
+
+The initial state will be $(T, x, true)$.
+
+In order to guarantee the proper termination of the algorithm we add the
+following rules.
+\begin{itemize}
+\item If $k=x$ and $c=true$ then check if $x$ is in the closure of $A$.  If so
+then stop, otherwise transition to $(A, x+1\bmod n, false)$.
+\item If $k=x$ and $c=false$ then stop.
+\end{itemize}
+If the chain stops because of the first bullet, then $x$ is in the closure of
+$T$.  If the chain stops because of the second bullet, then $A$ is exactly the
+closure of $T$ and doesn't contain $x$.
+
+Notice that this is a proper Markov chain because the transition rule uses only
+the current state and not any of the previous history.  Also, this transition
+rule computes the problem of whether $k$ is in the closure of $A$, which can be
+solved in constant time on $n^2$ processors, i.e.  the operation is $NC$.
+
+\end{proof}
+
 
 % ----------------------------------------------------------------------------
-\subsection{Subsection 2} \label{subsect2}
+\subsection{Notation} 
 % ----------------------------------------------------------------------------
 
-...
+In what follows, we denote $\pi(x)$ the probability distribution function of
+the target probability density, where $x\in\mathbf{R}^d$ is a $d$-dimensional
+vector of real numbers.  The proposal probability kernel will be denoted
+$q(x,y)$.  The first argument of $q$ stands for the current state.  For given
+and fixed $x$, the kernel $q(x,y)$, as a function of $y$ alone, reduces to a
+probability density function. We will denote this probability distribution by
+$q(x,\cdot)$.
 
 % ----------------------------------------------------------------------------
-\subsection{Subsection 3} \label{subsect3}
+\subsection{The sequential Metropolis-Hastings algorithm} \label{subsect-m-h-sequential}
 % ----------------------------------------------------------------------------
 
-...
+The Metropolis-Hastings algorithm provides a transition rule such that the 
+resulting Markov chain will have stationary distribution $\pi(x)$. 
 
-You can also have figures in your paper. Figure~\ref{fig1} is a
-typical example of an experimental evaluation result. Such graphs
-are ususally created with GnuPlot. Figure~\ref{fig2} is an example
-of a drawing created with {\em mdraw} or {\em epsfig}.
+\begin{algorithm}{Metropolis-Hastings}
+\step{\textbf{Inputs:}} { target pdf $\pi(x)$, proposal kernel $q(x,y)$, initial state $S_0$, 
+length of desired chain $n$. }
+\step{0.} {Compute $\pi(S_0)$.}
+\step{1.} {For $k$ from $0$ to $n-1$}
+\step{2.} {~~~ Generate candidate $Y \sim q(S_k, \cdot)$.}
+\step{3.} {~~~ Compute $\displaystyle \alpha=\frac{\pi(Y)q(Y,S_k)}{\pi(S_k)q(S_k,Y)}$.}
+\step{4.} {~~~ Generate $U\sim \mathrm{Uniform}[0,1]$ }
+\step{5.} {~~~ If $U<\alpha$ then \emph{accept} and set $S_{k+1}=Y$ }
+\step{}   {~~~~~~~~~~~~~~~~ else \emph{reject} and set $S_{k+1}=S_k$. }
+\step{6.} {Next $k$ }
+\step{\textbf{Output:}} { Markov chain of length $n$, $S_0, S_1, \ldots, S_n$. }
+\end{algorithm}
 
-% usage: \includeFig{label}{file}{caption}
+If $q(x,y)$ were a transition kernel that would create a Markov chain with 
+stationary distribution $\pi$, then the numerator of $\alpha$ would be exactly the
+unconditional probability that the chain would transition from state $Y$ to 
+state $S_k$.  Similarly the denominator would be the unconditional probability of
+the reverse jump occurring.  These two probabilities being equal is a sufficient
+condition for $q(x,y)$ to be a transition kernel that would run the Markov chain
+into stationary distribution $\pi$. 
 
-\includeFig{fig1}{Figures/figure-1}{Measured Running Times
-Of Some Unknown Algorithm Implementation}
+If the value of $\alpha$ computed in step 3 is less than $1$, this means that
+$q(x,y)$ is generating more transitions from $S_k$ to $Y$ than from $Y$ to
+$S_k$.  The algorithm "corrects" $q(x,y)$ by rejecting a fraction $\alpha$ of
+such jumps, thus making the probabilities of the two jumps equal.
 
-\includeFig{fig2}{Figures/figure-2}{XYZ and Hilbert Packings}
+Note that the computation of $\alpha$ in step 3 requires only a single
+evaluation of the target density at the candidate point, $\pi(Y)$.  The value
+of $\pi(S_k)$ is available from the previous iteration. 
+
+% ----------------------------------------------------------------------------
+\subsection{Prefetching algorithm} \label{subsect-prefetching-full}
+% ----------------------------------------------------------------------------
+
+\includeFigW{fig-pref-tree}{Figures/PrefetchingTree}
+    {width=.9\textwidth,keepaspectratio}
+    {Prefetching tree includes all possible paths the chain may take $h$ steps
+into the future.  White shows current state.  Orange shows proposed candidate. 
+Green shows points where $\pi$ needs to be computed}
+
+In the original prefetching algorithm proposed in \cite{brockwell2006parallel}
+we consider all possible paths that the Markov chain may take $h$ steps 
+into the future. At each step a new candidate is proposed and 
+is either accepted or rejected.  It is clear that all possible paths form 
+a complete binary tree with depth $h$.  This is illustrated in figure~\ref{fig-pref-tree}.
+
+Suppose that the current state is $S_k$.  This will be the root of the
+prefetching tree, so we set $X_0 = S_k$.  We see that all possible states the
+the chain may visit in the $h$ steps are $2^h$ in total.  Of these, one state
+is $X_0$ for which the value $\pi(X_0)=\pi(S_k)$ is already known.  The
+original prefetching algorithm is to compute the values of $\pi$ at the
+remaining $2^h-1$ points in parallel on $2^h-1$ processors and then perform $h$
+steps of the sequential M-H algorithm.  The chain will end up in one of the
+states at the bottom of the tree with state $S_{k+h}$.  We build a new
+prefetching tree with root $S_{k+h}$ and depth $h$ and so on.
+
+% ----------------------------------------------------------------------------
+\subsection{Complexity analysis of prefetching} \label{subsect-complexity-full}
+% ----------------------------------------------------------------------------
+
+It was already mentioned that we are working under the assumption that the
+computation of $\pi(x)$ takes more time than any other calculation in the
+algorithm.  In particular, the generation of random variables from the proposal
+distribution $q(x,\cdot)$, the evaluation of the proposal kernel $q(x,y)$, the
+generation of uniform random variables other operations take negligibly small
+amount of time compared to $\pi(x)$.  Under this assumption, the time of the
+algorithm is well approximated by the number of evaluations of $\pi(x)$.
+
+The problem size is $n$, which denotes the number of steps of the Markov 
+chain to be computed.  The depth of the prefetching tree is $h$ and we
+assume that $n$ is an integral multiple of $h$.
+
+The time of the sequential M-H algorithm is $n$, since it requires one
+evaluation of $\pi(Y)$ at each step.  This ignores the evaluation of $\pi(S_0)$
+-- we may assume that this value is provided as input to the algorithm.  This
+simplifies the equations a bit and does not change the conclusions.
+\begin{equation}
+T_s = n
+\end{equation}
+
+For the parallel time we first consider the case where the processors equal the number of required evaluations of $\pi$, i.e. 
+\begin{equation}
+p=2^h-1
+\label{eq-p-h}
+\end{equation}
+Then the evaluation of a single prefetching tree takes time $1$ and we have $n/h$ trees in total, so
+the parallel time is
+\begin{equation}
+T(p) = \frac{n}{h}
+\end{equation}
+This gives speedup and efficiency
+\begin{equation}
+s(p) = \frac{T_s}{T(p)} = h,  \qquad e(p) = \frac{s(p)}{p} = \frac{h}{2^h-1}.
+\end{equation}
+We see that the speedup is $h$ and if we solve the relationship (\ref{eq-p-h})
+for $p$ we may conclude that the speedup is logarithmic in $p$, as has been
+suggested in  \cite{brockwell2006parallel} and \cite{strid2010efficient}.  This, in fact,
+is not correct.  
+
+Now consider the general case where $p$ is not related to $h$.  The parallel time 
+now depends on both $p$ and $h$ and, therefore, so do the speedup and efficiency.
+The work to be done for a single prefetching tree 
+is still $2^h-1$, but this time the time is $(2^h-1)/p$ on $p$ processors by simulation.
+So the total parallel time for $n/h$ prefetching trees is
+\begin{equation}
+T(h,p) = \frac{(2^h-1)n}{hp}.
+\end{equation}
+The resulting speedup and efficiency are
+\begin{equation}
+s(h,p) = \frac{hp}{2^h-1}, \qquad e(h,p) = \frac{h}{2^h-1}.
+\end{equation}
+As it turns out the speedup is actually linear in $p$, however the slope of the
+line, which equals the efficiency, is small and decreases exponentially as $h$
+increases.  By this consideration the smallest value of $h$ will give the most
+efficient version of prefetching, which in fact is $h=1$, i.e. the sequential
+M-H. 
+
+\includeFig{fig-speed-full}{Figures/speedup-full-prefetching.pdf}
+{Theoretical speedup curves for prefetching}
+
+% ----------------------------------------------------------------------------
+\subsection{Implementation} \label{subsect-implementation}
+% ----------------------------------------------------------------------------
+
+There is one data structure in the prefetching algorithm and this is the prefetching 
+tree.  We perform two operations on it, which are listed below.
+\begin{description}
+\item[build] This includes generating the correct candidates for each node.
+\item[prefetch] This is the step of evaluating the values of $\pi$.
+\item[travel] This is the operation of running $h$ steps of M-H using the prefetched
+proposals and their $\pi$ values.
+\end{description}
+
+These operations can be simplified by proper numbering of the nodes in the 
+prefetching tree.  The inexes of the $2^h$ points in the prefetching tree of
+depth $h$ are the $h$-bit integers.  We adopt the strategy that at step $s$ 
+we set bit $s-1$ to $1$ in the accept branch and to $0$ in the reject branch.
+The bits are numbered from right to left starting from $0$.  At step $s$, all 
+bits to the right of bit $s-1$ are already set to some pattern of $0$s and $1$s
+corresponding to the rejections and acceptances along the path from the root
+of the tree to the node.  All bits to the
+left of bit $s-1$ have not been touched yet and are still $0$.  The proposed candidate at this node in the tree
+has index, which is derived from the index of the current state by setting bit 
+$s-1$ to $1$.  This is also illustrated in  figure~\ref{fig-pref-tree}.
+
+The advantage of this indexing scheme is that all the information needed
+for building and travelling the tree can be calculated from the 
+index of the node we are intersted in.  Also, it becomes very natural to store 
+the points at the bottom of the tree in an array.  This is efficient storage 
+for this data structure, considering that points appear in multiple 
+nodes.
+
+When building the tree, for each point, say $X_k$, we need to know at which step 
+it was proposed as a candidate and what was the current state, denote $X_c$, 
+when that happened.  We have the following formulas.
+\begin{align*}
+s(k) &= \left\{ \begin{aligned} 0, && k=0 \\ 1+\left\lfloor\log k\right\rfloor, && k>0 \end{aligned}
+\right.  \\
+c(k) &= k - 2^{s(k)-1}
+\end{align*}
+
 
 
 
@@ -146,6 +563,8 @@ Of Some Unknown Algorithm Implementation}
 % ############################################################################
 \section{Conclusion} \label{concl}
 % ############################################################################
+
+\textbf{=========== TODO ==============}
 
 The ``moral of the story'': What have we learned? What did we achieve?
 What did we not achieve? What would we do better next time? Possibilities
