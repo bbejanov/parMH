@@ -80,15 +80,18 @@ Boyan Bejanov\\
 % ############################################################################
 % Abstract
 % ############################################################################
-\begin{abstract}
-Prefetching is a parallelization technique for the Metropolis-Hastings (M-H)
-algorithm.  In this project several aspects of prefetching are explored.
-Some implemetation details are simplified by careful selection of a
-data structure. Complexity analysis shows that prefetching is 
-inefficient because it uses exponential number of processors, nevertheless
-it does provide speedup compared to the sequential M-H. 
-An attempt is also made to prove 
-the P-completeness of a general Markov chain problem.  
+\begin{abstract} 
+Prefetching is a parallelization approach for the Metropolis-Hastings
+algorithm, which is appropriate when the target probability density function is
+computationally expensive and impractical to parallelize.  This project is an
+investigation into several aspects of the full and incomplete prefetching
+algorithms.  Complexity analysis shows that prefetching is inefficient because
+it uses exponential number of processors, nevertheless it does provide speedup
+compared to the sequential algorithm.  Computational experiments demonstrate
+the performance in practice.  A data structure for the prefetching tree is
+designed in a way that simplifies the implementation of both full and
+incomplete prefetching.  An attempt is also made to prove the P-completeness of
+a general Markov chain problem.  
 \end{abstract}
 
 
@@ -298,20 +301,20 @@ distribution, because the expected length of the tour increases dramatically
 with dimension.  
 
 A recent algorithm, proposed in \cite{brockwell2006parallel}, is called 
-pre-fetching.  Suppose the Markov chain of an M-H algorithm is at some state
+prefetching.  Suppose the Markov chain of an M-H algorithm is at some state
 $X_n$ at some time $n$.  All possible trajectories for the next $h$ steps 
 form a full binary tree with root $X_n$ and depth $h$.  At each node 
 the two edges correspond to "accept" and "reject".  
 There are $2^h$ possible paths and a total of $2^h$ different 
-proposal states in the tree.  The idea of pre-fetching is to compute the values of $\pi$
+proposal states in the tree.  The idea of prefetching is to compute the values of $\pi$
 at the $2^h$ proposals in parallel and then perform the $h$ accept-reject 
 steps sequentially on the master process.  In \cite{strid2010efficient} 
 the authors suggest an improvement of this algorithm, whereby only the most probable 
-paths are pre-fetched, thus reducing the number of required processors, although at
+paths are prefetched, thus reducing the number of required processors, although at
 the risk that fewer than $h$ steps may be completed.  Another method suggested in 
 \cite{byrd2008reducing} can be interpreted as a special case of the methodology 
 suggested in \cite{strid2010efficient}.  The authors leverage the fact that the optimal 
-acceptance rate (from probabilistic point of view) is usually low and pre-fetch 
+acceptance rate (from probabilistic point of view) is usually low and prefetch 
 only the "reject" branches.
 
 % ############################################################################
@@ -342,14 +345,14 @@ generality, we will assume in what follows that $X=\left\{0, \ldots,
 n-1\right\}$. 
 
 The states of our Markov chain will be triples $(A,k,c)$, where $A$ is a subset
-of $X$ and $k$ is an element of $X$, and $c$ is a true/false flag.  The set $A$
+of $X$, $k$ is an element of $X$, and $c$ is a true/false flag.  The set $A$
 is the portion of the closure of $T$ computed so far.  The element $k$ will
 allow us to keep track of which element we need to consider next.  The flag $c$
 will keep track of whether the set $A$ has changed since the last time we
 visited $x$.
 
-Suppose the current state is $(A, k, c)$.  Our transition rule is deterministic
-and follows the following rules.
+Suppose the current state is $(A, k, c)$.  The transition rule for the Markov chain is deterministic
+and follows these guidelines.
 \begin{itemize}
 \item The next $A$ will be either $A$ itself or $A$ with $k$ added to it.  We
 add $k$ only if it isn't already in $A$ and can be generated from it, i.e.
@@ -371,12 +374,13 @@ then stop, otherwise transition to $(A, x+1\bmod n, false)$.
 \end{itemize}
 If the chain stops because of the first bullet, then $x$ is in the closure of
 $T$.  If the chain stops because of the second bullet, then $A$ is exactly the
-closure of $T$ and doesn't contain $x$.
+closure of $T$, which doesn't contain $x$.
 
 Notice that this is a proper Markov chain because the transition rule uses only
-the current state and not any of the previous history.  Also, this transition
-rule computes the problem of whether $k$ is in the closure of $A$, which can be
-solved in constant time on $n^2$ processors, i.e.  the operation is $NC$.
+the current state and not any of the previous history.  Also, the computationally 
+expensive part of this transition rule is the 
+computation of the problem of whether $k$ is in the closure of $A$.  This can be
+solved in constant time on $O(n^2)$ processors, i.e.  the operation is $NC$.
 
 \end{proof}
 
@@ -388,10 +392,10 @@ solved in constant time on $n^2$ processors, i.e.  the operation is $NC$.
 In what follows, we denote $\pi(x)$ the probability distribution function of
 the target probability density, where $x\in\mathbf{R}^d$ is a $d$-dimensional
 vector of real numbers.  The proposal probability kernel will be denoted
-$q(x,y)$.  The first argument of $q$ stands for the current state.  For given
+$q(x,y)$.  The first argument of $q$ stands for the current state.  For a given
 and fixed $x$, the kernel $q(x,y)$, as a function of $y$ alone, reduces to a
-probability density function. We will denote this probability distribution by
-$q(x,\cdot)$.
+probability density function. By abuse of notation, we will denote this
+probability distribution by $q(x,\cdot)$.
 
 % ----------------------------------------------------------------------------
 \subsection{The sequential Metropolis-Hastings algorithm} \label{subsect-m-h-sequential}
@@ -401,8 +405,9 @@ The Metropolis-Hastings algorithm provides a transition rule such that the
 resulting Markov chain will have stationary distribution $\pi(x)$. 
 
 \begin{algorithm}{Metropolis-Hastings}
-\step{\textbf{Inputs:}} { target pdf $\pi(x)$, proposal kernel $q(x,y)$, initial state $S_0$, 
-length of desired chain $n$. }
+\step{\textbf{Inputs:}} { target pdf $\pi(x)$, proposal kernel $q(x,y)$ and its
+proposal distribution $q(x, \cdot)$, initial state $S_0$, length of desired
+chain $n$. }
 \step{0.} {Compute $\pi(S_0)$.}
 \step{1.} {For $k$ from $0$ to $n-1$}
 \step{2.} {~~~ Generate candidate $Y \sim q(S_k, \cdot)$.}
@@ -411,7 +416,7 @@ length of desired chain $n$. }
 \step{5.} {~~~ If $U<\alpha$ then \emph{accept} and set $S_{k+1}=Y$ }
 \step{}   {~~~~~~~~~~~~~~~~ else \emph{reject} and set $S_{k+1}=S_k$. }
 \step{6.} {Next $k$ }
-\step{\textbf{Output:}} { Markov chain of length $n$, $S_0, S_1, \ldots, S_n$. }
+\step{\textbf{Output:}} { Markov chain of length $n$: $S_0, S_1, \ldots, S_n$. }
 \end{algorithm}
 
 If $q(x,y)$ were a transition kernel that would create a Markov chain with 
@@ -423,8 +428,9 @@ condition for $q(x,y)$ to be a transition kernel that would run the Markov chain
 into stationary distribution $\pi$. 
 
 If the value of $\alpha$ computed in step 3 is less than $1$, this means that
+the denominator is larger than the numerator, i.e. 
 $q(x,y)$ is generating more transitions from $S_k$ to $Y$ than from $Y$ to
-$S_k$.  The algorithm "corrects" $q(x,y)$ by rejecting a fraction $\alpha$ of
+$S_k$.  The M-H algorithm "corrects" $q(x,y)$ by rejecting a fraction $\alpha$ of
 such jumps, thus making the probabilities of the two jumps equal.
 
 Note that the computation of $\alpha$ in step 3 requires only a single
@@ -439,7 +445,7 @@ of $\pi(S_k)$ is available from the previous iteration.
     {width=.9\textwidth,keepaspectratio}
     {Prefetching tree includes all possible paths the chain may take $h$ steps
 into the future.  White shows current state.  Orange shows proposed candidate. 
-Green shows points where $\pi$ needs to be computed}
+}
 
 In the original prefetching algorithm proposed in \cite{brockwell2006parallel}
 we consider all possible paths that the Markov chain may take $h$ steps 
@@ -454,8 +460,8 @@ is $X_0$ for which the value $\pi(X_0)=\pi(S_k)$ is already known.  The
 original prefetching algorithm is to compute the values of $\pi$ at the
 remaining $2^h-1$ points in parallel on $2^h-1$ processors and then perform $h$
 steps of the sequential M-H algorithm.  The chain will end up in one of the
-states at the bottom of the tree with state $S_{k+h}$.  We build a new
-prefetching tree with root $S_{k+h}$ and depth $h$ and so on.
+states at the bottom of the tree which will be state $S_{k+h}$ of the chain.
+We build a new prefetching tree with root $S_{k+h}$ and depth $h$ and so on.
 
 % ----------------------------------------------------------------------------
 \subsection{Complexity analysis of prefetching} \label{subsect-complexity-full}
@@ -465,9 +471,9 @@ It was already mentioned that we are working under the assumption that the
 computation of $\pi(x)$ takes more time than any other calculation in the
 algorithm.  In particular, the generation of random variables from the proposal
 distribution $q(x,\cdot)$, the evaluation of the proposal kernel $q(x,y)$, the
-generation of uniform random variables other operations take negligibly small
-amount of time compared to $\pi(x)$.  Under this assumption, the time of the
-algorithm is well approximated by the number of evaluations of $\pi(x)$.
+generation of uniform random variables and all other operations take negligibly
+small amount of time compared to $\pi(x)$.  Under this assumption, the time of
+the algorithm is adequately modelled by the number of evaluations of $\pi(x)$.
 
 The problem size is $n$, which denotes the number of steps of the Markov 
 chain to be computed.  The depth of the prefetching tree is $h$ and we
@@ -476,12 +482,13 @@ assume that $n$ is an integral multiple of $h$.
 The time of the sequential M-H algorithm is $n$, since it requires one
 evaluation of $\pi(Y)$ at each step.  This ignores the evaluation of $\pi(S_0)$
 -- we may assume that this value is provided as input to the algorithm.  This
-simplifies the equations a bit and does not change the conclusions.
+simplifies the equations a bit and does not change the conclusions. Sequential time is
 \begin{equation}
-T_s = n
+T_s = n.
 \end{equation}
 
-For the parallel time we first consider the case where the processors equal the number of required evaluations of $\pi$, i.e. 
+For the parallel time, we first consider the case where the processors equal
+the number of required evaluations of $\pi$, i.e. 
 \begin{equation}
 p=2^h-1
 \label{eq-p-h}
@@ -491,14 +498,14 @@ the parallel time is
 \begin{equation}
 T(p) = \frac{n}{h}
 \end{equation}
-This gives speedup and efficiency
+This yields the following speedup and efficiency:
 \begin{equation}
 s(p) = \frac{T_s}{T(p)} = h,  \qquad e(p) = \frac{s(p)}{p} = \frac{h}{2^h-1}.
 \end{equation}
 We see that the speedup is $h$ and if we solve the relationship (\ref{eq-p-h})
 for $p$ we may conclude that the speedup is logarithmic in $p$, as has been
 suggested in  \cite{brockwell2006parallel} and \cite{strid2010efficient}.  This, in fact,
-is not correct.  
+is not correct and we can see this in the case where $p$ is not linked to $h$.  
 
 Now consider the general case where $p$ is not related to $h$.  The parallel time 
 now depends on both $p$ and $h$ and, therefore, so do the speedup and efficiency.
@@ -506,16 +513,16 @@ The work to be done for a single prefetching tree
 is still $2^h-1$, but this time the time is $(2^h-1)/p$ on $p$ processors by simulation.
 So the total parallel time for $n/h$ prefetching trees is
 \begin{equation}
-T(h,p) = \frac{(2^h-1)n}{hp}.
+T(h,p) = \frac{n(2^h-1)}{hp}.
 \end{equation}
 The resulting speedup and efficiency are
 \begin{equation}
-s(h,p) = \frac{hp}{2^h-1}, \qquad e(h,p) = \frac{h}{2^h-1}.
+s(h,p) = \frac{hp}{2^h-1} \qquad \mathrm{and} \qquad e(h,p) = \frac{h}{2^h-1}.
 \end{equation}
-As it turns out the speedup is actually linear in $p$, however the slope of the
+We see now that the speedup is actually linear in $p$.  However, the slope of the
 line, which equals the efficiency, is small and decreases exponentially as $h$
-increases.  By this consideration the smallest value of $h$ will give the most
-efficient version of prefetching, which in fact is $h=1$, i.e. the sequential
+increases.  By this consideration, the smallest value of $h$ will give the most
+efficient version of prefetching, which ironically is $h=1$, i.e. the sequential
 M-H. 
 
 \includeFig{fig-speed-full}{Figures/speedup-full-prefetching.pdf}
@@ -529,19 +536,19 @@ There is only one data structure in the prefetching algorithm -- the prefetching
 tree.  We perform three operations on it, which are listed below.
 \begin{description}
 \item[build] This includes generating the correct candidates for each node.
-\item[prefetch] This is evaluating the values of $\pi$.
+\item[prefetch] This is the evaluation of the values of $\pi$.
 \item[travel] This is the operation of running $h$ steps of M-H using the prefetched
 proposals and their $\pi$ values.
 \end{description}
 
-These operations can be simplified by proper numbering of the nodes in the
-prefetching tree.  The indexes of the $2^h$ points in the prefetching tree of
-depth $h$ are the $h$-bit integers.  We adopt the strategy that at step $s$ we
-set bit in position $(s-1)$ to $1$ in the accept branch and to $0$ in the
-reject branch.  The bits are numbered from right to left starting from $0$.  At
+These operations can be simplified by proper numbering of the $X$-points within the nodes in the
+prefetching tree.  With depth $h$, there are $2^h$ different $X$'s and their
+indexes are the $h$-bit integers.  We adopt the strategy that at step $s$ we
+set bit in position $(s-1)$ to either $1$ for the accept branch, or to $0$ for the
+reject branch.  The bits positions are numbered from right to left starting from $0$.  At
 step $s$, all bits to the right of bit $(s-1)$ are already set to some pattern
 of $0$s and $1$s corresponding to the rejections and acceptances along the path
-from the root of the tree to the node.  All bits to the left of bit $(s-1)$
+from the root to the node.  All bits to the left of bit $(s-1)$
 have not been touched yet and are still $0$.  The proposed candidate 
  has index derived from the index of the current
 state by setting bit $(s-1)$ to $1$.  This is also illustrated in
@@ -556,24 +563,27 @@ figure~\ref{fig-pref-tree}.
 
 \includeFig{fig-pref-table}{Figures/TreeTable.png}{
     Relationships between the step number $s$, the current state $c$ and the
-proposed state $k$.}
+proposed state $k$ associated with a node in the prefetching tree (cf. figure~\ref{fig-pref-tree}).}
 
-When building the tree, for each point, say $X_k$, we need to know at which step 
-it was proposed and what was the current state, denote it $X_c$, 
-when that happened.  Notice that all candidates proposed at step $s$ have 
-$1$ in bit position $(s-1)$ and all bits further to the left are $0$.  This means
-that the step are which a point was proposed is the position of the most 
-significant bit that is set to $1$.  The point that was the current state 
-has index in which the bit at position $(s-1)$ is set to $0$ and all the 
-other bits are the same.  We have the following formulas, which are also 
-illustrated in the table in figure~\ref{fig-pref-table}.
+When building the tree, for each point, say $X_k$, we need to know at which
+step it was proposed and what was the current state, denote it $X_c$, when that
+happened.  Notice that all candidates proposed at step $s$ have $1$ in bit
+position $(s-1)$ and all bits further to the left are $0$.  This means that the
+step are which a point was proposed is the position of the most significant bit
+that is set to $1$.  The point that was the current state has index in which
+the bit at position $(s-1)$ is set to $0$ and all the other bits are the same.
+These considerations are summed up in the following formulas, and are also
+illustrated in figure~\ref{fig-pref-table}.
 \begin{align*}
 s(k) &= \left\{ \begin{aligned} 0, && k=0 \\ 1+\left\lfloor\log k\right\rfloor, && k>0 \end{aligned}
 \right.  \\
-c(k) &= k - 2^{s(k)-1}
+c(k) &= k - 2^{s(k)-1}, \qquad \mathrm{for } k>0
 \end{align*}
 Here $s(k)$ denotes the step number and $c(k)$ denotes the index of the point 
 that was the current state at the time when point with index $k$ was proposed.
+
+The following code \textbf{builds} the tree, i.e. generates proposals and places them in 
+an array.
 \begin{Verbatim}[frame=single]
 for(c=0; c< (1<<(h-1)) ; +=c) {
     for(s=s(c); s<h; ++s) { 
@@ -583,7 +593,7 @@ for(c=0; c< (1<<(h-1)) ; +=c) {
 }
 \end{Verbatim}
 
-The prefetching of the tree is straight forward;  it simply involves the 
+The \textbf{prefetching} of the tree is straight forward;  it simply involves the 
 evaluation of $\pi$ at $2^h-1$ points in parallel.  The following code 
 example uses Cilk.
 \begin{Verbatim}[frame=single]
@@ -598,8 +608,8 @@ cilk void prefetch_target_values(int c, int s) {
 }
 \end{Verbatim}
 
-To travel the tree we need the relationship between the current node and the 
-proposed candidate to consider at the current step.  The only difference between 
+To \textbf{travel} the tree we need the relationship between the current node and the 
+proposed candidate at the current step.  The only difference between 
 the indexes of these two points is the bit in position $s-1$.
 \begin{Verbatim}[frame=single]
 c = 0;
@@ -615,8 +625,8 @@ for(s=1; s<h; ++s) {
 % ----------------------------------------------------------------------------
 
 The algorithm was tested on a synthetic problem where the target distribution
-was chosen to be $15$-dimensional mixture of two normal distributions.  Because
-the pdf of this distribution is relatively quick to evaluate, additional
+was chosen to be a $15$-dimensional mixture of two normal distributions.  Because
+the pdf of this distribution is relatively simple and quick to evaluate, additional
 computations were added to $\pi$ to increase its computation time to
 approximately $0.1$ sec.  The test server has two Xeon E5-2690 CPUs with 8
 cores each running at 2.90GHz for a total of 16 cores.  
@@ -629,9 +639,9 @@ It is actually a step function that approximates from below the straight line
 of the theoretical speedup.  The step function is the result of not applying 
 the simulation technique in order to balance the load evenly among the cores.
 For example, when the number of processors is between $8$ and $14$, some of the 
-processors compute two values of $\pi$ while other processors compute a single 
+processors compute two values of $\pi$ while the other processors compute just one  
 value of $\pi$ after which they sit idle waiting for the processors with the 
-higher loads to finish.  Because of this, the speed up using between 8 and 14 
+higher loads to finish.  Because of this, the speed up for all $p$ between 8 and 14 
 processors is $2$.  
 
 
@@ -643,44 +653,45 @@ The incomplete prefetching was suggested in \cite{strid2010efficient}.  It aims
 to improve the efficiency of the method by computing only a part of the prefetching 
 tree.  The advantage is that the number of processors used can be less than exponential.
 On the other hand, there is no guarantee that the chain will travel $h$ steps through 
-the tree.
+the tree, because there is a positive probability that the chain may encounter
+a node that has not been prefetched.
 
-By changing the variance of the proposal kernel $q(x,y)$ we are able 
-to target a particular acceptance rate.  The target acceptance rate is 
-usually denoted $\alpha$, although it should be distinguished from the
-$\alpha$ that is computed on each step of the M-H algorithm. The latter 
-is a part of the algorithm and necessarily is different at each step since the
-current state and the proposed candidate change.  The former $\alpha$ is the 
-actual average number of accepted proposals over the long run of the chain.
-Usually the acceptance rate is targeted to be some value that is optimal
-from the point of view of the statistical quality of the Markov chain.  
-For multidimensional distributions $\alpha = 0.234$ is optimal in vast 
+By changing the variance of the proposal kernel $q(x,y)$ we are able to target
+a particular acceptance rate.  The target acceptance rate is usually denoted
+$\alpha$, although it should be distinguished from the $\alpha$ that appears in
+step 3 of the M-H algorithm. The latter is a part of the algorithm and
+necessarily is different at each step since the current state and the proposed
+candidate change.  The former $\alpha$ is the actual average number of accepted
+proposals over the long run of the chain under the M-H algorithm.  Usually the
+acceptance rate is targeted to be some value that is optimal from the point of
+view of the statistical quality of the Markov chain.  For multidimensional
+distributions with dimension higher than 6, $\alpha = 0.234$ is optimal in vast
 majority of the cases.
 
-The known value of the targeted, and therefore expected, acceptance rate
-allows us to assign probabilities to the accept and reject branches of our
-prefetching tree.  All accept branches have probability $\alpha$ and 
-the reject branches have probability $(1-\alpha)$.
+The known value of the targeted, and therefore expected, acceptance rate allows
+us to assign probabilities to the accept and reject branches of the prefetching
+tree.  All accept branches have probability $\alpha$ and the reject branches
+have probability $(1-\alpha)$.
 
-The probability that a node will actually be visited by 
-the chain is the product of the probabilities assigned to the edges along the 
-path from the root of the tree to node.  If we have $p$ processors, we  
-evaluate $\pi$ at $p$ proposals which we choose to maximize the expected 
-number of steps (or depth) that the chain will travel through the computed 
-part of the tree.  
+The probability that a node will actually be visited by the chain is the
+product of the probabilities assigned to the edges along the path from the root
+to node.  If we have $p$ processors, we  evaluate $\pi$ at $p$ proposals, which
+we choose to maximize the expected number of steps (or depth) that the chain
+will travel through the computed part of the tree.  
 
-When the chain visits a node of the 
-tree, it will need the value of $\pi$ at the point that is proposed at that 
-node (the $X_k$ marked in orange in figure~\ref{fig-pref-tree}).  So 
-selecting a node to be 
-prefetched means that $\pi(X_k)$ is evaluated.  
-Note that a node can only be reached if all 
-nodes connecting it to the root are also being prefetched. 
+When the chain visits a node of the tree, it will need the value of $\pi$ at
+the point that is proposed at that node (the $X_k$ marked in orange in
+figure~\ref{fig-pref-tree}).  So selecting a node to be prefetched means that
+$\pi(X_k)$ is evaluated.  Note that a node can only be reached if all nodes
+connecting it to the root are also being prefetched. 
 
-The expected number of steps for a particular selection of points to be 
-prefetched is simply the sum of the probabilities of all selected 
-nodes.  This fact is not difficult to prove, however the proof is omitted here. 
-The highest expected depth for given number of points, $p$, will be denoted $D(p)$.
+The expected number of steps for a particular selection of points to be
+prefetched is simply the sum of the probabilities of all selected nodes.  This
+fact is not difficult to prove, however the proof is omitted here.  The highest
+expected depth for given number of points, $p$, will be denoted $D(p)$.
+
+All claims about the node probabilities and the expected depth made in this 
+section are justified in \cite{strid2010efficient}.
 
 % ----------------------------------------------------------------------------
 \subsection{Implementation remarks for incomplete prefetching}
@@ -701,23 +712,26 @@ accept branch, we assign probability $\alpha$ to $X_3$, while following
 the reject branch we assign probability $(1-\alpha)$ to $X_2$.  Now from 
 $X_3$, which already has probability $\alpha$, if we follow the 
 accept branch, we multiply by $\alpha$ and assign probability $\alpha^2$ to 
-$x_7$.  Similarly, following the reject branch we assign probability 
+$X_7$.  Similarly, following the reject branch we assign probability 
 $\alpha(1-\alpha)$ to $X_5$. We continue this pattern throughout the tree. 
 
-What is the formula that given $X_k$ (a proposal, orange in figure~\ref{fig-pref-tree})
+What is the formula that for a given $X_k$ (a proposal, orange in figure~\ref{fig-pref-tree})
 will compute the indexes of the accept and reject branches from $X_k$? 
-We know the step where $X_k$ is proposed, the is the same $s(k)$ as before.
+We know the step where $X_k$ is proposed: it is the same $s(k)$ as before.
 The accept branch will lead us to the point we propose at step $(s(k)+1)$ when 
 $X_k$ will have become the current state.  The index is $k$ with the $s(k)$-th bit set to $1$, i.e.
+the accept branch of $k$ leads to $a(k)$ given by 
 \begin{equation}
 	a(k) = k + 2^{s(k)}.
 \end{equation}
-The reject branch is also a proposal at step $s(k)+1$, so it will also have the 
-$s(k)$-th bit set to $1$.  However, its $s(k)-1$-st bit will be zero, since 
-this is the case where $X_k$ would have been rejected.  So the formula is
+The reject branch is also a proposal at step $s(k)+1$, so it will also have the
+$s(k)$-th bit set to $1$.  However, its $(s(k)-1)$-st bit will be zero, since
+this is the case where $X_k$ would have been rejected at step $s(k)$.  So the
+formula for the reject branch is 
 \begin{equation}
 	r(k) = a(k) - 2^{s(k)-1}.
 \end{equation}
+This leads to the following \textbf{probability assignment} code.
 \begin{Verbatim}[frame=single]
     prob[1] = 1.0;
     for(k=1; k < (1<<(h-1)); ++k) {
@@ -733,8 +747,9 @@ In the selection of most probable nodes to be visited, we need a connected sub-t
 $p$ nodes. 
 The naive approach is to start with an empty sub-tree.  In each step, starting 
 from the root, we visit nodes that are one 
-edge away from the sub-tree we have so far. The one with the highest probability 
+edge away from the sub-tree we have so far. The node with the highest probability 
 gets added to the sub-tree and the process repeats until we have $p$ nodes selected.  
+The following code is an example of the \textbf{selection of nodes} operation.
 \begin{Verbatim}[frame=single]
 int best_point(int c) {
     int s = log2(c)+1;
@@ -766,56 +781,57 @@ void select_points() {
 The time to compute one incomplete prefetching tree is $1$, since we always
 select $p$ points to prefetch.
 With each incomplete tree we expect to make $D(p)$ steps, therefore we expect 
-to have to compute $n/D(p)$ trees.  Therefore the parallel time is
+to have to compute $n/D(p)$ trees.  Therefore the expected parallel time is
 \begin{equation}
-T(p) = \frac{n}{D(p)}
+T(p) = \frac{n}{D(p)}.
 \end{equation}
 From here, the speedup is 
 \begin{equation}
-s(p) = \frac{T_s}{T(p)} = \frac{nD(p)}{n} = D(p)
+s(p) = \frac{T_s}{T(p)} = \frac{nD(p)}{n} = D(p).
 \end{equation}
+In figure~\ref{fig-incomplete-speed} the solid line shows the speedup curve for
+$\alpha=0.234$.  If we compare it to the curves in figure~\ref{fig-speed-full}, we see that the
+expected speedup of incomplete prefetching dominates that of full prefetching 
+regardless of the value of $h$.
 
 \includeFig{fig-incomplete-speed}{Figures/speedup-partial-prefetching-actual.pdf}
 {Theoretical and empirical speedup curves for incomplete prefetching with $\alpha=0.234$.}
 
-In figure~\ref{fig-incomplete-speed} the solid line shows the speedup curve for
-$\alpha=0.234$.  If we compare with figure~\ref{fig-speed-full} we see that 
-the curve of incomplete prefetching is above the speedup curves for the full prefetching for all 
-values of $h$.
 % ----------------------------------------------------------------------------
 \subsection{Run times for incomplete prefetching} 
 % ----------------------------------------------------------------------------
 
 The dashed line in figure~\ref{fig-incomplete-speed} shows the empirical
 results from running the incomplete prefetching algorithm on the same example
-as in the original prefetching case.  The run curve flattens off and does not
+as in the full prefetching case.  The curve flattens off and does not
 follow very closely the theoretical one.  This may be attributed to the fact
-that the theoretical curve is not guaranteed performance, rather it is the
+that the theoretical curve is not a guaranteed performance, rather it is the
 expected speedup.  This expected speedup is calculated assuming certain
-acceptance rate in the M-H algorithm.  It the realized acceptance rate is not
-very close to its target value, then the actual performance would reflect that.
-Nevertheless, the graphs suggest the with incomplete prefetching we can achieve
+acceptance rate in the M-H algorithm.  If the realized acceptance rate is not
+close to this assumed value, then the actual performance would reflect that.
+Nevertheless, the graphs suggest that with incomplete prefetching we can achieve
 speedup of over $3$ using 5 processors, while speedup of over $3$ in the
-original prefetching is achieved with 15 processors.
+full prefetching is achieved with $h=4$ and 15 processors.
 
 
 % ############################################################################
 \section{Conclusion} \label{concl}
 % ############################################################################
 
-Prefetching is a promising new algorithm with very limited applicability.  
-It only makes sense to use prefetching when the computation of the target 
-probability is very expensive and yet it is not possible to parallelize
-$\pi$ itself.  Even then, although there is speedup to be gained from 
-prefetching, it comes at the cost of having to use exponential 
-number of processors.  This makes prefetching extremely inefficient; in fact 
-the efficiency diminishes exponentially as $h$ increases.  
+Prefetching is a promising new algorithm with somewhat limited applicability.
+It only makes sense to use prefetching when the computation of the target
+probability is very expensive and it is not possible to parallelize $\pi$
+itself.  Even then, although there is speedup to be gained from prefetching, it
+comes at the cost of having to use exponential number of processors.  This
+makes prefetching extremely inefficient; in fact the efficiency diminishes
+exponentially as $h$ increases.  
 
-Incomplete prefetching attempts to improve the efficiency by computing 
-only a part of the prefetching tree.  The run times show that this approach is 
-able to achieve the same run times and speedups using far fewer processors 
-than the full prefetching.  At the same time, the performance in 
-practice does not achieve the expected values.
+Incomplete prefetching attempts to improve the efficiency by computing only a
+part of the prefetching tree.  The run times show that this approach is able to
+achieve the same or slightly better run times and speedups, but using far fewer
+processors compared to the full prefetching.  At the same time, the performance
+in practice does not achieve the expected values, although this may be possible
+to improve by more careful selection of the proposal kernel.
    
 
 % ############################################################################
