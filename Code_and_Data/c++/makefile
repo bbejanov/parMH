@@ -8,12 +8,13 @@ F90=ifort
 RNGROOT = /cluster/prod
 ifeq ( , $(wildcard $(RNGROOT)/lib/librng* ))
     RNGROOT = /scratch/bejb/opt/rngstreams
-endif
-ifeq ( , $(wildcard $(RNGROOT)/lib/librng* ))
-    $(error Where is RngStreams?)
+    ifeq ( , $(wildcard $(RNGROOT)/lib/librng* ))
+        $(error Where is RngStreams?)
+    endif
 endif
 
-my_flags = -Wall -pedantic -g -O0
+#~ my_flags = -Wall -pedantic -g -O0
+my_flags = -O3 
 my_flags += -xhost -fp-model precise -fPIC -mkl=sequential
 my_flags += -openmp
 
@@ -39,7 +40,11 @@ LDFLAGS += -mkl=sequential
 #                             -Wl,--end-group -lpthread -lm
 LIBS += -lrngstreams
 
-all : main 
+all : main
+
+.PHONY : boyan
+boyan :
+	@echo $(SS) '-->' $(CFLAGS)
 
 deps : makefile.dep
 
@@ -66,7 +71,7 @@ main : main.cpp libstatdist.so
 
 .PHONY : clean deps
 clean :
-	-rm -f *.o *.mod *.so main
+	-rm -f *.o *.mod *.so main makefile.dep
 
 
 

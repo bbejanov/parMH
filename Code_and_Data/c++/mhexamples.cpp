@@ -105,7 +105,7 @@ void rwmh_prefetch_Example2(int *n, const double *start, double *chain, double *
 void Example3Target::work_for_delay(int p) const
  {
     MyRngStream S(p);
-    static const int work_size = 1000;
+    static const int work_size = 700;
     double *A = new double[work_size*work_size];
     int *ipiv = new int[work_size];
     int info;

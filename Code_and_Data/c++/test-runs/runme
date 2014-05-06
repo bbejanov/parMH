@@ -1,0 +1,13 @@
+#!/bin/bash -f
+
+for N in 8 7 6 5 4 3
+do    
+    file="N=${N}.txt"
+    truncate -s 0 ${file}
+    for (( i=0; i<1000; ++i ))
+    do 
+        OMP_NUM_THREADS=${N} ./main 6000 9 ${N} 2 >> ${file} 2>&1
+    done
+done
+
+

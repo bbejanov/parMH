@@ -138,7 +138,7 @@ void Gaussian::sample(int n, double pts[]) const
             #ifdef FP_FAST_FMA
             pts[i] = fma(stddev, pts[i], mean);
             #else
-            pts[i] = mean + stddev*pts[i];
+            pts[i] = stddev*pts[i] + mean;
             #endif
         }
     }

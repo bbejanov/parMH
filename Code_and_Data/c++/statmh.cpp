@@ -242,6 +242,7 @@ void PrefetchRWMHChain::prefetch_select_poitns()
 void PrefetchRWMHChain::prefetch_set_alpha_const(double alpha)
 {
     if(pref_h==0) return;
+    std::cout << "Target acceptance rate = " << alpha << std::endl;
     if(pref_alpha==0) pref_alpha = new double[pref_h];
     for(int i=0; i<pref_h; ++i) pref_alpha[i] = alpha;
 }

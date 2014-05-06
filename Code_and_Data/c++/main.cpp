@@ -131,7 +131,8 @@ int main(int argc, char **argv)
     MyMH->run(n, start_point);
     full_time = get_wall_time() - start_time;
 
-    std::clog << "h = " << pref_h << std::endl
+    std::clog
+        << "h = " << pref_h << std::endl
         << "n = " << n << std::endl
         << "time = " << full_time << "sec." << std::endl
         << "avg time per step = " << full_time / n << "sec." << std::endl;
@@ -153,9 +154,12 @@ int main(int argc, char **argv)
         PrefetchRWMHChain *P = dynamic_cast<PrefetchRWMHChain*>(MyMH);
         if(P->pref_at_step!=0) {
             double sum_s=0.0, max_s=-INFINITY, min_s=INFINITY, count_s=0.0;
+            double pref_hist[pref_h + 2];
+            memset(pref_hist, 0, sizeof(double)*(2+pref_h));        
             for(int i=0; i<n; ++i) {
-                int s = P->pref_at_step[i];
+                int s = P->pref_at_step[i];                
                 if(s > 0) {
+                    pref_hist[s] += 1.0;
                     sum_s += s;
                     count_s += 1.0;
                     if( s > max_s ) max_s = s;
@@ -165,6 +169,10 @@ int main(int argc, char **argv)
             std::clog << "successful prefetching steps: " // << std::endl
                 << "\tmin=" << min_s << "\tavg=" << sum_s / count_s
                 << "\tmax=" << max_s << std::endl;
+            for(int zz=1; zz<=pref_h; ++zz) {
+                std::clog << "  (" << zz << ")" << pref_hist[zz];
+            }
+            std::clog << std::endl;
         }
     }
 
