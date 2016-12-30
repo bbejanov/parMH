@@ -63,7 +63,7 @@ include makefile.dep
 %.so :
 	$(CXX) $(CXXFLAGS) -shared $(LDFLAGS) -o $@ $^ $(LIBS)
 
-libstatdist.so : my_stat.o statdistros.o statmh.o mhexamples.o
+libstatdist.so : my_stat.o statdistros.o statmh.o mhexamples.o ncdfinv.o
 
 
 main : main.cpp libstatdist.so

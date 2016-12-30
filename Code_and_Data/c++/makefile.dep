@@ -4,6 +4,7 @@ mhexamples.o: mhexamples.cpp statmh.hpp statdistros.hpp \
  /cluster/prod/include/RngStream.h mhexamples.hpp
 my_stat.o: my_stat.cpp my_stat.h statdistros.hpp \
  /cluster/prod/include/RngStream.h
+ncdfinv.o: ncdfinv.cpp
 statdistros.o: statdistros.cpp statdistros.hpp /cluster/prod/include/RngStream.h
 statmh.o: statmh.cpp statmh.hpp statdistros.hpp /cluster/prod/include/RngStream.h
 testing_main.o: testing_main.cpp my_stat.h statmh.hpp statdistros.hpp \
