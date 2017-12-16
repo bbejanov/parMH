@@ -7,6 +7,7 @@ project(parMH)
 enable_language(CXX)
 enable_language(C)
 
-ADD_SUBDIRECTORY(external)
-include_directories(RngStreams_INCLUDE_DIRS)
+include_directories(${CMAKE_BINARY_DIR}/include)
+
+add_subdirectory(external)
 
